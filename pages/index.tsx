@@ -150,6 +150,55 @@ export default function HomePage() {
     setSelection(INITIAL_SELECTION);
   }
 
+  /**
+   * カウントダウン表示コンポーネント
+   * - `target` は ISO 日付文字列（YYYY-MM-DD または YYYY-MM-DDThh:mm:ss 等）を想定
+   * - 日付が YYYY-MM-DD のみの場合は当日 23:59:59 を締切時刻とする
+   */
+  function Countdown({ target }: { target?: string | null }) {
+    const [now, setNow] = useState<Date>(() => new Date());
+
+    // 目標日時を Date に変換（ローカルタイムで解釈）
+    function parseTarget(t?: string | null): Date | null {
+      if (!t) return null;
+      // YYYY-MM-DD のみの場合
+      const m = t.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (m) {
+        const y = parseInt(m[1], 10);
+        const mo = parseInt(m[2], 10) - 1;
+        const d = parseInt(m[3], 10);
+        return new Date(y, mo, d, 23, 59, 59);
+      }
+      // それ以外は Date に渡してみる（ISO 拡張形式を想定）
+      const dt = new Date(t);
+      if (isNaN(dt.getTime())) return null;
+      return dt;
+    }
+
+    useEffect(() => {
+      const id = setInterval(() => setNow(new Date()), 1000);
+      return () => clearInterval(id);
+    }, []);
+
+    const tgt = parseTarget(target ?? null);
+    if (!tgt) return <span className="countdown">-</span>;
+
+    const diff = Math.max(0, Math.floor((tgt.getTime() - now.getTime()) / 1000));
+    if (diff <= 0) return <span className="countdown">締切済み</span>;
+
+    const days = Math.floor(diff / (24 * 3600));
+    const hh = Math.floor((diff % (24 * 3600)) / 3600);
+    const mm = Math.floor((diff % 3600) / 60);
+    const ss = diff % 60;
+
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return (
+      <span className="countdown">
+        {days > 0 ? `${days}日 ` : ''}{pad(hh)}:{pad(mm)}:{pad(ss)}
+      </span>
+    );
+  }
+
   return (
     <main className="page">
       <section className="panel">
@@ -294,42 +343,60 @@ export default function HomePage() {
                       >
                         {formatFull(conference.paper_deadline)}
                       </button>
+                      <div>
+                        <Countdown target={conference.paper_deadline} />
+                      </div>
                     </td>
                     <td>
                       {conference.r1_date ? (
-                        <button
-                          type="button"
-                          className={`date-btn${isSelectedDate(conference.r1_date) ? ' selected' : ''}`}
-                          onClick={() => selectEvent(conference, 'R1', conference.r1_date)}
-                        >
-                          {formatShort(conference.r1_date)}
-                        </button>
+                        <>
+                          <button
+                            type="button"
+                            className={`date-btn${isSelectedDate(conference.r1_date) ? ' selected' : ''}`}
+                            onClick={() => selectEvent(conference, 'R1', conference.r1_date)}
+                          >
+                            {formatShort(conference.r1_date)}
+                          </button>
+                          <div>
+                            <Countdown target={conference.r1_date} />
+                          </div>
+                        </>
                       ) : (
                         <span className="empty-cell" aria-hidden="true">&nbsp;</span>
                       )}
                     </td>
                     <td>
                       {conference.r2_date ? (
-                        <button
-                          type="button"
-                          className={`date-btn${isSelectedDate(conference.r2_date) ? ' selected' : ''}`}
-                          onClick={() => selectEvent(conference, 'R2', conference.r2_date)}
-                        >
-                          {formatShort(conference.r2_date)}
-                        </button>
+                        <>
+                          <button
+                            type="button"
+                            className={`date-btn${isSelectedDate(conference.r2_date) ? ' selected' : ''}`}
+                            onClick={() => selectEvent(conference, 'R2', conference.r2_date)}
+                          >
+                            {formatShort(conference.r2_date)}
+                          </button>
+                          <div>
+                            <Countdown target={conference.r2_date} />
+                          </div>
+                        </>
                       ) : (
                         <span className="empty-cell" aria-hidden="true">&nbsp;</span>
                       )}
                     </td>
                     <td>
                       {conference.revision_date ? (
-                        <button
-                          type="button"
-                          className={`date-btn${isSelectedDate(conference.revision_date) ? ' selected' : ''}`}
-                          onClick={() => selectEvent(conference, 'Revision', conference.revision_date)}
-                        >
-                          {formatShort(conference.revision_date)}
-                        </button>
+                        <>
+                          <button
+                            type="button"
+                            className={`date-btn${isSelectedDate(conference.revision_date) ? ' selected' : ''}`}
+                            onClick={() => selectEvent(conference, 'Revision', conference.revision_date)}
+                          >
+                            {formatShort(conference.revision_date)}
+                          </button>
+                          <div>
+                            <Countdown target={conference.revision_date} />
+                          </div>
+                        </>
                       ) : (
                         <span className="empty-cell" aria-hidden="true">&nbsp;</span>
                       )}

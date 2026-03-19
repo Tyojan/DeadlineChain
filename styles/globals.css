@@ -219,6 +219,18 @@ a:hover {
   font-variant-numeric: tabular-nums;
 }
 
+/* カウントダウンの表示 */
+.countdown {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  font-size: 12px;
+  color: inherit; /* 日付表示と同じ色を継承 */
+  text-align: center; /* Submission deadline の真下に中央揃え */
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
+}
+
 .name-btn {
   font-variant-numeric: tabular-nums;
   border: none;
