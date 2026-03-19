@@ -31,20 +31,47 @@ export function computeNextAvailableDate(conference: Conference, selection: Sele
   if (!selection.selectedType) {
     return null;
   }
+  // helper: extract first ISO date (YYYY-MM-DD) from value (handles ranges like 2026-08-02_to_2026-09-02)
+  function extractIso(v?: string | null): string | null {
+    if (!v) return null;
+    const m = v.match(/(\d{4}-\d{2}-\d{2})/);
+    return m ? m[1] : null;
+  }
 
+  // Determine base date with fallbacks when some review dates are missing.
   if (selection.selectedType === 'submit') {
-    return conference.r1_date;
+    const base = extractIso(conference.r1_date) ?? extractIso(conference.r2_date) ?? extractIso(conference.revision_date);
+    return base;
   }
 
   if (selection.selectedType === 'R1') {
-    return addDays(conference.r1_date, 14);
+    // prefer r1_date; if missing, fall back to r2_date (Notification)
+    const base = extractIso(conference.r1_date) ?? extractIso(conference.r2_date) ?? extractIso(conference.revision_date);
+    if (!base) return null;
+    try {
+      return addDays(base, 14);
+    } catch (e) {
+      return null;
+    }
   }
 
   if (selection.selectedType === 'R2') {
-    return addDays(conference.r2_date, 28);
+    const base = extractIso(conference.r2_date) ?? extractIso(conference.revision_date) ?? extractIso(conference.r1_date);
+    if (!base) return null;
+    try {
+      return addDays(base, 28);
+    } catch (e) {
+      return null;
+    }
   }
 
-  return addDays(conference.revision_date, 42);
+  const base = extractIso(conference.revision_date) ?? extractIso(conference.r2_date) ?? extractIso(conference.r1_date);
+  if (!base) return null;
+  try {
+    return addDays(base, 42);
+  } catch (e) {
+    return null;
+  }
 }
 
 export function isRankIncluded(rank: Conference['rank'], rankFilter: RankFilter): boolean {

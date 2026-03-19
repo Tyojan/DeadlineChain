@@ -206,7 +206,6 @@ export default function HomePage() {
           <p>
             選択: {selection.selectedConference ?? '-'} / {selectionTypeLabel(selection.selectedType)} / {formatFull(selection.selectedDate ?? null)}
           </p>
-          <p>次に投稿可能な日: {nextAvailableDate ?? '-'}</p>
         </div>
 
         {errorMessage && <p className="error">{errorMessage}</p>}
@@ -236,6 +235,10 @@ export default function HomePage() {
                 // 常にタイル表示クラスを付与
                 classes.push('tiled-row');
                 if (selection.selectedConference === conference.id) classes.push('selected-conf');
+
+                // 何も選択されていない初期状態の行に薄い水色を付与（rejectable が無くても白にしない）
+                const isIdle = !selection.selectedConference;
+                if (isIdle) classes.push('idle-row');
 
                 // 予測的に、R1 / R2 の場合にその会議が利用可能かを計算して表示用クラスを付与
                 const availableIfR1 = isConferenceAvailable(conference, selectedConference, {

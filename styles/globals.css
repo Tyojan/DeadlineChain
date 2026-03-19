@@ -118,6 +118,12 @@ tr.available-r2.tiled-row {
   background: #e6f9ea; /* 薄緑 */
 }
 
+/* 初期表示（何も選択されていない）時の行背景：薄い水色
+   rejectable が無い行も白にしないために適用 */
+tbody tr.tiled-row.idle-row {
+  background: #e6f9ff;
+}
+
 /* 選択中はコントラスト反転（黒背景 + 白文字）を強める */
 tr.selected-conf.tiled-row {
   background: #111;
