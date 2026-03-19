@@ -155,13 +155,12 @@ export default function HomePage() {
    * - `target` は ISO 日付文字列（YYYY-MM-DD または YYYY-MM-DDThh:mm:ss 等）を想定
    * - 日付が YYYY-MM-DD のみの場合は当日 23:59:59 を締切時刻とする
    */
-  function Countdown({ target }: { target?: string | null }) {
+  function Countdown({ target, mode = 'days' }: { target?: string | null; mode?: 'days' | 'seconds' }) {
     const [now, setNow] = useState<Date>(() => new Date());
 
     // 目標日時を Date に変換（ローカルタイムで解釈）
     function parseTarget(t?: string | null): Date | null {
       if (!t) return null;
-      // YYYY-MM-DD のみの場合
       const m = t.match(/^(\d{4})-(\d{2})-(\d{2})$/);
       if (m) {
         const y = parseInt(m[1], 10);
@@ -169,28 +168,35 @@ export default function HomePage() {
         const d = parseInt(m[3], 10);
         return new Date(y, mo, d, 23, 59, 59);
       }
-      // それ以外は Date に渡してみる（ISO 拡張形式を想定）
       const dt = new Date(t);
       if (isNaN(dt.getTime())) return null;
       return dt;
     }
 
+    // 更新間隔はモードによって変える（秒表示は1秒、日表示は60秒）
     useEffect(() => {
-      const id = setInterval(() => setNow(new Date()), 1000);
+      const interval = mode === 'seconds' ? 1000 : 60 * 1000;
+      const id = setInterval(() => setNow(new Date()), interval);
       return () => clearInterval(id);
-    }, []);
+    }, [mode]);
 
     const tgt = parseTarget(target ?? null);
     if (!tgt) return <span className="countdown">-</span>;
 
-    const diff = Math.max(0, Math.floor((tgt.getTime() - now.getTime()) / 1000));
-    if (diff <= 0) return <span className="countdown">締切済み</span>;
+    const diffMs = tgt.getTime() - now.getTime();
+    if (diffMs <= 0) return <span className="countdown">締切済み</span>;
 
-    const days = Math.floor(diff / (24 * 3600));
-    const hh = Math.floor((diff % (24 * 3600)) / 3600);
-    const mm = Math.floor((diff % 3600) / 60);
-    const ss = diff % 60;
+    if (mode === 'days') {
+      const diffDays = Math.ceil(diffMs / (24 * 3600 * 1000));
+      return <span className="countdown">{diffDays}日</span>;
+    }
 
+    // seconds モード：HH:MM:SS（必要なら日数も付ける）
+    const totalSeconds = Math.floor(diffMs / 1000);
+    const days = Math.floor(totalSeconds / (24 * 3600));
+    const hh = Math.floor((totalSeconds % (24 * 3600)) / 3600);
+    const mm = Math.floor((totalSeconds % 3600) / 60);
+    const ss = totalSeconds % 60;
     const pad = (n: number) => String(n).padStart(2, '0');
     return (
       <span className="countdown">
@@ -344,7 +350,7 @@ export default function HomePage() {
                         {formatFull(conference.paper_deadline)}
                       </button>
                       <div>
-                        <Countdown target={conference.paper_deadline} />
+                        <Countdown target={conference.paper_deadline} mode="seconds" />
                       </div>
                     </td>
                     <td>
@@ -358,7 +364,7 @@ export default function HomePage() {
                             {formatShort(conference.r1_date)}
                           </button>
                           <div>
-                            <Countdown target={conference.r1_date} />
+                            <Countdown target={conference.r1_date} mode="days" />
                           </div>
                         </>
                       ) : (
@@ -376,7 +382,7 @@ export default function HomePage() {
                             {formatShort(conference.r2_date)}
                           </button>
                           <div>
-                            <Countdown target={conference.r2_date} />
+                            <Countdown target={conference.r2_date} mode="days" />
                           </div>
                         </>
                       ) : (
@@ -385,18 +391,13 @@ export default function HomePage() {
                     </td>
                     <td>
                       {conference.revision_date ? (
-                        <>
-                          <button
-                            type="button"
-                            className={`date-btn${isSelectedDate(conference.revision_date) ? ' selected' : ''}`}
-                            onClick={() => selectEvent(conference, 'Revision', conference.revision_date)}
-                          >
-                            {formatShort(conference.revision_date)}
-                          </button>
-                          <div>
-                            <Countdown target={conference.revision_date} />
-                          </div>
-                        </>
+                        <button
+                          type="button"
+                          className={`date-btn${isSelectedDate(conference.revision_date) ? ' selected' : ''}`}
+                          onClick={() => selectEvent(conference, 'Revision', conference.revision_date)}
+                        >
+                          {formatShort(conference.revision_date)}
+                        </button>
                       ) : (
                         <span className="empty-cell" aria-hidden="true">&nbsp;</span>
                       )}
