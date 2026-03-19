@@ -1,0 +1,311 @@
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f5f7fa;
+  color: #1d2433;
+}
+
+.page {
+  font-variant-numeric: tabular-nums;
+  border: none;
+  background: transparent;
+  padding: 8px 0;
+  cursor: pointer;
+  font: inherit;
+  border-radius: 0;
+  transition: background-color 150ms ease, color 150ms ease;
+  display: block;
+  width: 100%;
+  text-align: center;
+  user-select: text; /* テキストのコピペを可能にする */
+  border: 1px solid #d8deea;
+
+.date-btn:hover {
+  background: rgba(0, 0, 0, 0.03);
+  color: inherit;
+}
+
+/* ヘッダーとキャプションがクリック可能であることを示す */
+.panel h1[role="button"],
+.panel .caption[role="button"] {
+  cursor: pointer;
+}
+
+.date-btn:focus {
+  outline: 2px solid rgba(25, 82, 201, 0.18);
+  outline-offset: -2px;
+}
+
+.date-btn.selected {
+  background: #e6f9ea; /* 薄緑 */
+  color: inherit;
+}
+
+/* 選択された会議（コントラスト反転） */
+tr.selected-conf {
+  background: #222; /* 暗めの背景 */
+  color: #fff;
+}
+tr.selected-conf .name-btn,
+tr.selected-conf td,
+tr.selected-conf .date-btn {
+  color: #fff;
+}
+tr.selected-conf .date-btn {
+  background: rgba(255,255,255,0.06);
+}
+
+/* R1リジェクトで投稿可能な会議：黄色の枠表示 */
+tr.available-r1 {
+  box-shadow: inset 0 0 0 2px #f5c542; /* 黄色の内側ボーダー */
+}
+
+/* R2リジェクトで投稿可能な会議：緑で表示 */
+tr.available-r2 {
+  background: #e6f9ea;
+}
+
+/* タイル風に見せ、セルのボタン枠を消す */
+table {
+  border-collapse: separate;
+  border-spacing: 0 10px; /* 行間を作る */
+}
+
+tbody tr.tiled-row {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(16,24,40,0.04);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+tbody tr.tiled-row:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(16,24,40,0.08);
+}
+
+/* セルの区切り線を取り、内側余白でタイル感を出す */
+th, td {
+  border-bottom: none;
+  background: transparent;
+}
+
+/* 日付ボタンはプレーンテキストに見せる（枠や影を削除） */
+.date-btn {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 8px 0 !important;
+  border-radius: 0 !important;
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+/* R1は黄色背景に、R2は緑背景に（ユーザー指定の色調） */
+tr.available-r1.tiled-row {
+  background: #fff7e6; /* 薄い黄色 */
+}
+
+tr.available-r2.tiled-row {
+  background: #e6f9ea; /* 薄緑 */
+}
+
+/* 選択中はコントラスト反転（黒背景 + 白文字）を強める */
+tr.selected-conf.tiled-row {
+  background: #111;
+  color: #fff;
+}
+tr.selected-conf.tiled-row .date-btn {
+  background: transparent;
+  color: #fff;
+}
+
+/* 空セル（クリック不可） */
+.empty-cell {
+  display: block;
+  min-height: 36px;
+  padding: 8px 0;
+  color: #9aa3b2;
+}
+  margin: 8px 0 0;
+  color: #4f5d79;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 16px;
+}
+
+select,
+button {
+  border: 1px solid #c6cfdd;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+button {
+  cursor: pointer;
+}
+
+.status {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #33415c;
+}
+
+.status p {
+  margin: 4px 0;
+}
+
+.error {
+  color: #c92a2a;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 14px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+th,
+td {
+  border-bottom: 1px solid #e3e9f2;
+  text-align: left;
+  padding: 10px 8px;
+  font-size: 14px;
+}
+
+th {
+  color: #4f5d79;
+}
+
+a {
+  color: #1952c9;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.date-btn {
+  font-variant-numeric: tabular-nums;
+}
+
+.name-btn {
+  font-variant-numeric: tabular-nums;
+  border: none;
+  background: transparent;
+  padding: 6px 10px;
+  cursor: pointer;
+  font: inherit;
+  border-radius: 6px;
+  transition: background-color 150ms ease, color 150ms ease;
+  background: transparent;
+
+.date-btn:hover {
+  background: rgba(25, 82, 201, 0.06);
+  color: #0b58d6;
+}
+
+.date-btn.selected {
+  background: #e6f9ea; /* 薄緑 */
+  color: inherit;
+}
+
+tr.earliest {
+  background: #e7f7ea;
+}
+
+/* ヘッダーとセル内の縦方向中央揃え */
+th, td {
+  vertical-align: middle;
+}
+
+/* 日付と会議名を縦中央に揃えるためのフレックス設定 */
+.date-btn,
+.name-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 6px 0;
+}
+
+/* ヘッダー行の高さを調整して日付との縦位置を揃える */
+thead th {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.name-btn:hover {
+  background: rgba(25, 82, 201, 0.08);
+  color: #0b58d6;
+}
+
+.name-btn:focus {
+  outline: 3px solid rgba(11,88,214,0.12);
+  outline-offset: 2px;
+}
+
+/* 会議名が外部リンクの場合の見た目をボタン風に保つ */
+.name-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: inherit;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+.name-link:hover {
+  background: rgba(25,82,201,0.06);
+  color: #0b58d6;
+}
+.name-link:focus {
+  outline: 3px solid rgba(11,88,214,0.12);
+  outline-offset: 2px;
+}
+
+tr.earliest {
+  background: #e7f7ea;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 12px;
+  }
+
+  .panel {
+    padding: 14px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+}
