@@ -21,7 +21,21 @@ function formatShort(isoDate?: string | null): string {
   const m = isoDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!m) return isoDate; // fallback to raw string for non-ISO ranges
   const [, , month, day] = m;
-  return `${month}-${day}`;
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const mi = parseInt(month, 10) - 1;
+  const mname = months[mi] ?? month;
+  return `${mname} ${day}`;
+}
+
+function formatFull(isoDate?: string | null): string {
+  if (!isoDate) return '-';
+  const m = isoDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return isoDate;
+  const [, year, month, day] = m;
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const mi = parseInt(month, 10) - 1;
+  const mname = months[mi] ?? month;
+  return `${mname} ${day}, ${year}`;
 }
 
 function selectionTypeLabel(type: SelectionType | null): string {
@@ -190,7 +204,7 @@ export default function HomePage() {
 
         <div className="status">
           <p>
-            選択: {selection.selectedConference ?? '-'} / {selectionTypeLabel(selection.selectedType)} / {selection.selectedDate ?? '-'}
+            選択: {selection.selectedConference ?? '-'} / {selectionTypeLabel(selection.selectedType)} / {formatFull(selection.selectedDate ?? null)}
           </p>
           <p>次に投稿可能な日: {nextAvailableDate ?? '-'}</p>
         </div>
@@ -264,7 +278,7 @@ export default function HomePage() {
                     <td>{conference.rank ?? '-'}</td>
                     <td>
                       {conference.abstract_deadline ? (
-                        <span className="abstract-cell">{conference.abstract_deadline}</span>
+                        <span className="abstract-cell">{formatFull(conference.abstract_deadline)}</span>
                       ) : (
                         <span className="empty-cell" aria-hidden="true">&nbsp;</span>
                       )}
@@ -275,7 +289,7 @@ export default function HomePage() {
                         className={`date-btn${isSelectedDate(conference.paper_deadline) ? ' selected' : ''}`}
                         onClick={() => selectEvent(conference, 'submit', conference.paper_deadline)}
                       >
-                        {conference.paper_deadline}
+                        {formatFull(conference.paper_deadline)}
                       </button>
                     </td>
                     <td>

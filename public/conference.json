@@ -3,6 +3,8 @@
     {
       "id": "ares2026",
       "name": "ARES 2026",
+      "rank": "B",
+      "url": "https://www.ares-conference.eu/",
       "location": "Linköping, Sweden",
       "deadlines": {
         "abstract": "2026-03-02",
@@ -18,6 +20,8 @@
     {
       "id": "systex26",
       "name": "SysTex 26",
+      "rank": "C",
+      "url": "https://systex-workshop.github.io/",
       "location": "Edinburgh",
       "deadlines": {
         "paper": "2026-02-20",
@@ -53,6 +57,7 @@
     {
       "id": "iwsec2026",
       "name": "IWSEC 2026",
+      "url": "https://www.iwsec.org/2026/",
       "location": "Tokyo",
       "deadlines": {
         "paper": "2026-06-08",
@@ -67,6 +72,8 @@
     {
       "id": "ccs2026",
       "name": "ACM CCS 2026",
+      "rank": "A*",
+      "url": "https://www.sigsac.org/ccs/CCS2026/",
       "deadlines": {
         "abstract": "2026-04-22",
         "paper": "2026-04-29",
@@ -82,6 +89,8 @@
     {
       "id": "esorics2026",
       "name": "ESORICS 2026",
+      "rank": "A",
+      "url": "https://esorics2026.org",
       "location": "Rome",
       "deadlines": {
         "paper": "2026-04-21",
@@ -108,6 +117,8 @@
     {
       "id": "usenix2027_cycle1",
       "name": "USENIX Security 2027",
+      "rank": "A*",
+      "url": "https://www.usenix.org/conference/usenixsecurity27",
       "cycle": "cycle1",
       "location": "Denver",
       "deadlines": {
@@ -118,6 +129,8 @@
     {
       "id": "usenix2027_cycle2",
       "name": "USENIX Security 2027",
+      "rank": "A*",
+      "url": "https://www.usenix.org/conference/usenixsecurity27",
       "cycle": "cycle2",
       "location": "Denver",
       "deadlines": {
@@ -143,6 +156,8 @@
     {
       "id": "atc2026",
       "name": "USENIX ATC 2026",
+      "rank": "A",
+      "url": "https://www.usenix.org/conference/atc26",
       "location": "Hong Kong",
       "deadlines": {
         "paper": "2026-06-10",
