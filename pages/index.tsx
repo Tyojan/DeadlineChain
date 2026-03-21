@@ -167,11 +167,40 @@ export default function HomePage() {
       if (prevSubmit) {
         const prevConf = conferences.find((c) => c.id === prevSubmit.selectedConference);
         if (prevConf) {
-          const rejectDate = prevConf.r2_date || prevConf.revision_date || prevConf.r1_date || prevConf.paper_deadline || '';
-          // remove any existing entries for that conference, then add R2 entry
+          // Decide whether the previous submit should be recorded as an R1 (early reject)
+          // or R2 (notification) based on why the new conference is selectable.
+          // If the clicked target is selectable because its submission is on/after
+          // prevConf.r2_date, consider it a R2 (green) case; otherwise if it's on/after
+          // prevConf.r1_date treat as R1 (yellow).
+          let chosenType: SelectionType = 'R2';
+          let chosenDate = prevConf.r2_date ?? prevConf.revision_date ?? prevConf.r1_date ?? prevConf.paper_deadline ?? '';
+          try {
+            const hasTargetPaper = Boolean(conference.paper_deadline);
+            const prevR2 = prevConf.r2_date;
+            const prevR1 = prevConf.r1_date;
+            let availableIfR2 = false;
+            let availableIfR1 = false;
+            if (hasTargetPaper && prevR2) {
+              availableIfR2 = compareIsoDate(conference.paper_deadline, prevR2) >= 0;
+            }
+            if (hasTargetPaper && prevR1) {
+              availableIfR1 = compareIsoDate(conference.paper_deadline, prevR1) >= 0;
+            }
+            if (availableIfR2) {
+              chosenType = 'R2';
+              chosenDate = prevR2;
+            } else if (availableIfR1) {
+              chosenType = 'R1';
+              chosenDate = prevR1;
+            }
+          } catch (e) {
+            // fall back to defaults above
+          }
+
+          // remove any existing entries for that conference, then add chosen entry
           filtered = filtered.filter((s) => s.selectedConference !== prevConf.id);
-          if (rejectDate) {
-            filtered.push({ selectedConference: prevConf.id, selectedDate: rejectDate, selectedType: 'R2' });
+          if (chosenDate) {
+            filtered.push({ selectedConference: prevConf.id, selectedDate: chosenDate, selectedType: chosenType });
           }
         }
       }
