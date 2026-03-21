@@ -115,11 +115,25 @@ export default function HomePage() {
     return conferences.find((conference) => conference.id === selection.selectedConference) ?? null;
   }, [conferences, selection.selectedConference]);
 
+  // Active selection: prefer explicit `selection`, otherwise use last chained selection
+  const activeSelection = useMemo(() => {
+    if (selection.selectedConference) return selection;
+    if (selectionChain.length > 0) return selectionChain[selectionChain.length - 1];
+    return INITIAL_SELECTION;
+  }, [selection, selectionChain]);
+
+  // Compute selectedConference from the active selection so that availability
+  // coloring persists even when the explicit selection was cleared.
+  const activeSelectedConference = useMemo(() => {
+    if (!activeSelection || !activeSelection.selectedConference) return null;
+    return conferences.find((c) => c.id === activeSelection.selectedConference) ?? null;
+  }, [conferences, activeSelection]);
+
   const availableConferences = useMemo(() => {
     return conferences
       .filter((conference) => isRankIncluded(conference.rank, rankFilter))
-      .filter((conference) => isConferenceAvailable(conference, selectedConference, selection));
-  }, [conferences, rankFilter, selectedConference, selection]);
+      .filter((conference) => isConferenceAvailable(conference, activeSelectedConference, activeSelection));
+  }, [conferences, rankFilter, activeSelectedConference, activeSelection]);
 
   const displayedConferences = useMemo(() => {
     // Keep conferences selected in order (the selection chain) at the front.
@@ -144,11 +158,11 @@ export default function HomePage() {
   const earliestConference = useMemo(() => pickEarliestConference(availableConferences), [availableConferences]);
 
   const nextAvailableDate = useMemo(() => {
-    if (!selectedConference) {
+    if (!activeSelectedConference) {
       return null;
     }
-    return computeNextAvailableDate(selectedConference, selection);
-  }, [selectedConference, selection]);
+    return computeNextAvailableDate(activeSelectedConference, activeSelection);
+  }, [activeSelectedConference, activeSelection]);
 
   function selectEvent(conference: Conference, type: SelectionType, date: string) {
     setSelection({
@@ -206,6 +220,22 @@ export default function HomePage() {
       }
       // ensure no lingering submit entries remain (keep only the new submit when adding)
       filtered = filtered.filter((s) => s.selectedType !== 'submit');
+      // If the user selected an older date, remove any chained entries whose
+      // dates are strictly later than this selection to avoid ordering inversions.
+      if (date) {
+        try {
+          filtered = filtered.filter((s) => {
+            if (!s.selectedDate) return true;
+            try {
+              return compareIsoDate(s.selectedDate, date) <= 0;
+            } catch (e) {
+              return true;
+            }
+          });
+        } catch (e) {
+          // ignore
+        }
+      }
       const last = filtered[filtered.length - 1];
       if (last && last.selectedConference === conference.id && last.selectedDate === date && last.selectedType === type) {
         return filtered;
@@ -340,6 +370,7 @@ export default function HomePage() {
                 <th>Early Reject Notification</th>
                 <th>Notification</th>
                 <th>Revision Deadline</th>
+                <th aria-hidden="true"></th>
               </tr>
             </thead>
             <tbody>
@@ -367,8 +398,11 @@ export default function HomePage() {
                 const isChainOrSelected = selection.selectedConference === conference.id || Boolean(selectionChain.find((s) => s.selectedConference === conference.id));
                 if (isChainOrSelected) classes.push('selected-conf');
 
-                // Apply a light cyan background to idle rows (do not make them white even if not rejectable)
-                const isIdle = !selection.selectedConference;
+                // Apply a light cyan background to idle rows when there is no active
+                // selection and the row is NOT part of the selection chain. This
+                // prevents chain rows from appearing idle when the active selection
+                // was cleared (e.g., after deleting the last chained item).
+                const isIdle = !selection.selectedConference && !isChainOrSelected;
                 if (isIdle) classes.push('idle-row');
 
                 // Predictively compute availability for R1 / R2 based on the SELECTED conference
@@ -379,8 +413,8 @@ export default function HomePage() {
                 // is on/after that R1 date.
                 let availableIfR1 = false;
                 let availableIfR2 = false;
-                const selR1 = selectedConference ? (selection.selectedType === 'R1' && selection.selectedDate ? selection.selectedDate : selectedConference.r1_date) : null;
-                const selR2 = selectedConference ? (selection.selectedType === 'R2' && selection.selectedDate ? selection.selectedDate : selectedConference.r2_date) : null;
+                const selR1 = activeSelectedConference ? (activeSelection.selectedType === 'R1' && activeSelection.selectedDate ? activeSelection.selectedDate : activeSelectedConference.r1_date) : null;
+                const selR2 = activeSelectedConference ? (activeSelection.selectedType === 'R2' && activeSelection.selectedDate ? activeSelection.selectedDate : activeSelectedConference.r2_date) : null;
                 try {
                   if (selR1) {
                     availableIfR1 = compareIsoDate(conference.paper_deadline, selR1) >= 0;
@@ -395,8 +429,8 @@ export default function HomePage() {
                 } catch (e) {
                   availableIfR2 = false;
                 }
-                const selHasR1 = Boolean(selectedConference && (selectedConference.r1_date || selection.selectedType === 'R1'));
-                const selHasR2 = Boolean(selectedConference && (selectedConference.r2_date || selection.selectedType === 'R2'));
+                const selHasR1 = Boolean(activeSelectedConference && (activeSelectedConference.r1_date || activeSelection.selectedType === 'R1'));
+                const selHasR2 = Boolean(activeSelectedConference && (activeSelectedConference.r2_date || activeSelection.selectedType === 'R2'));
                 // Do not mark the currently-selected or chained rows as "available" —
                 // that would be visually contradictory (a selected row shouldn't also
                 // appear as a candidate to submit to itself).
@@ -534,6 +568,38 @@ export default function HomePage() {
                         <span className="empty-cell" aria-hidden="true">&nbsp;</span>
                       </td>
                     )}
+                    <td className="chain-action-cell">
+                      {isChainOrSelected ? (
+                        <button
+                          type="button"
+                          title="Remove from chain"
+                          className="chain-delete-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // remove this conference from the selection chain and then
+                            // make the last chained item the active explicit selection
+                            setSelectionChain((prev) => {
+                              const newChain = prev.filter((s) => s.selectedConference !== conference.id);
+                              if (selection.selectedConference === conference.id) {
+                                if (newChain.length > 0) {
+                                  const last = newChain[newChain.length - 1];
+                                  setSelection({
+                                    selectedConference: last.selectedConference,
+                                    selectedDate: last.selectedDate,
+                                    selectedType: last.selectedType
+                                  });
+                                } else {
+                                  setSelection(INITIAL_SELECTION);
+                                }
+                              }
+                              return newChain;
+                            });
+                          }}
+                        >
+                          ×
+                        </button>
+                      ) : null}
+                    </td>
                   </tr>
                 );
               })}
