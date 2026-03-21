@@ -16,11 +16,10 @@ export function convertJsonToConferences(raw: any): Conference[] {
     try {
       const paper_deadline = pickDate(item.deadlines?.paper, item.deadlines?.paper_deadline);
       const abstract_deadline = pickDate(item.deadlines?.abstract, item.deadlines?.abstract_deadline);
-      if (!paper_deadline) continue; // 紙の締切が無ければ一覧に出さない
 
       const r1_date = pickDate(item.deadlines?.early_reject, item.deadlines?.r1_date);
       const r2_date = pickDate(item.deadlines?.r2_date, item.deadlines?.notification);
-      const revision_date = pickDate(item.deadlines?.rebuttal_start, item.deadlines?.rebuttal);
+      const revision_date = pickDate(item.deadlines?.revision_date, item.deadlines?.rebuttal);
 
       const event_start = item.event?.start || item.event?.date || '';
       const event_end = item.event?.end || item.event?.date || '';
@@ -40,7 +39,7 @@ export function convertJsonToConferences(raw: any): Conference[] {
         area: item.area ?? '',
         location: item.location ?? '',
         url: item.url ?? item.cfp ?? '',
-        paper_deadline: paper_deadline,
+        paper_deadline: paper_deadline ?? '',
         abstract_deadline: abstract_deadline ?? '',
         r1_date: r1_date ?? '',
         r2_date: r2_date ?? '',
@@ -58,5 +57,10 @@ export function convertJsonToConferences(raw: any): Conference[] {
     }
   }
 
-  return out.sort((a, b) => (a.paper_deadline < b.paper_deadline ? -1 : a.paper_deadline > b.paper_deadline ? 1 : 0));
+  return out.sort((a, b) => {
+    if (!a.paper_deadline && !b.paper_deadline) return a.name.localeCompare(b.name, 'en');
+    if (!a.paper_deadline) return 1;
+    if (!b.paper_deadline) return -1;
+    return a.paper_deadline < b.paper_deadline ? -1 : a.paper_deadline > b.paper_deadline ? 1 : 0;
+  });
 }

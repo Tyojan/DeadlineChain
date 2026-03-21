@@ -17,6 +17,16 @@ function toDate(dateText: string): Date {
   return date;
 }
 
+function isValidIsoDate(dateText?: string | null): boolean {
+  if (!dateText) return false;
+  try {
+    toDate(dateText);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 // helper: extract first ISO date (YYYY-MM-DD) from a string (handles ranges like 2026-08-02_to_2026-09-02)
 function extractIso(v?: string | null): string | null {
   if (!v) return null;
@@ -31,6 +41,13 @@ export function addDays(dateText: string, days: number): string {
 }
 
 export function compareIsoDate(left: string, right: string): number {
+  const leftValid = isValidIsoDate(left);
+  const rightValid = isValidIsoDate(right);
+
+  if (!leftValid && !rightValid) return 0;
+  if (!leftValid) return 1;
+  if (!rightValid) return -1;
+
   return toDate(left).getTime() - toDate(right).getTime();
 }
 
@@ -91,6 +108,10 @@ export function isConferenceAvailable(
   selectedConference: Conference | null,
   selection: SelectionState
 ): boolean {
+  if (!target.paper_deadline || !isValidIsoDate(target.paper_deadline)) {
+    return false;
+  }
+
   if (!selection.selectedType || !selectedConference) {
     return true;
   }
@@ -141,9 +162,11 @@ export function isConferenceAvailable(
 }
 
 export function pickEarliestConference(conferences: Conference[]): Conference | null {
-  if (conferences.length === 0) {
+  const validConferences = conferences.filter((conference) => isValidIsoDate(conference.paper_deadline));
+
+  if (validConferences.length === 0) {
     return null;
   }
 
-  return [...conferences].sort((a, b) => compareIsoDate(a.paper_deadline, b.paper_deadline))[0];
+  return [...validConferences].sort((a, b) => compareIsoDate(a.paper_deadline, b.paper_deadline))[0];
 }

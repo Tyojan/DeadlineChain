@@ -33,17 +33,23 @@
     },
     {
       "id": "dsn2026_hap",
-      "name": "DSN 2026 Workshop HAP",
+      "name": "HAP '26 Workshop",
       "location": "Charlotte",
+      "url": "https://plaublin.codeberg.page/2026-hap-workshop/",
       "deadlines": {
         "paper": "2026-03-31",
         "notification": "2026-04-17",
         "camera_ready": "2026-04-27"
-      }
+      },
+      "event": {
+        "date": "2026-06-22"
+      }      
     },
     {
-      "id": "cybertrust26",
-      "name": "cybertrust26",
+      "id": "CyResTrust",
+      "name": "CyResTrust 2026",
+      "location": "Linköping, Sweden",
+      "url": "https://www.ares-conference.eu/cyrestrust",
       "deadlines": {
         "paper": "2026-05-04",
         "notification": "2026-06-01",
@@ -74,6 +80,7 @@
       "name": "ACM CCS 2026",
       "rank": "A*",
       "url": "https://www.sigsac.org/ccs/CCS2026/",
+      "location": "Hague, Netherlands",
       "deadlines": {
         "abstract": "2026-04-22",
         "paper": "2026-04-29",
@@ -82,9 +89,10 @@
         "notification": "2026-07-17",
         "camera_ready": "2026-09-17"
       },
-      "review": {
-        "rounds": ["R1", "R2", "Final"]
-      }
+      "event": {
+        "start": "2026-11-15",
+        "end": "2026-11-19"
+      }      
     },
     {
       "id": "esorics2026",
@@ -106,6 +114,7 @@
       "id": "acsac2026",
       "name": "ACSAC 2026",
       "location": "Los Angeles",
+      "url": "https://www.acsac.org/",
       "deadlines": {
         "paper": "2026-05-30"
       },
@@ -141,11 +150,12 @@
     {
       "id": "apsys2026",
       "name": "APSys 2026",
-      "location": "Bangkok",
+      "location": "Bangkok, Thailand",
+      "url": "https://apsys26.github.io/",
       "deadlines": {
         "abstract": "2026-05-13",
         "paper": "2026-05-20",
-        "notification": "2026-07-09",
+        "notification": "2026-07-29",
         "camera_ready": "2026-08-20"
       },
       "event": {
@@ -168,6 +178,43 @@
       },
       "event": {
         "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "sp_conf",
+      "name": "IEEE Symposium on Security and Privacy 2026",
+      "rank": "A*",
+      "url": "https://www.ieee-security.org/TC/SP2026/index.html",
+      "location": "San Francisco, CA",
+      "estimated": true,
+      "deadlines": {
+        "abstract": "2026-05-29",
+        "paper": "2026-06-05",
+        "early_reject": "2026-07-21",
+        "rebuttal_start": "2026-08-18",
+        "revision_date": "2026-08-25",
+        "notification": "2026-09-09",
+        "camera_ready": "2026-10-17"
+      },
+      "event": {
+        "start": "2026-05-18",
+        "end": "2026-05-21"
+      }
+    },
+    {
+      "id": "raid2026",
+      "name": "RAID 2026",
+      "rank": "A",
+      "url": "https://raid2026.org/",
+      "location": "Lancaster, UK",
+      "estimated": false,
+      "deadlines": {
+        "paper": "2026-04-16",
+        "notification": "2026-07-10"
+      },
+      "event": {
+        "start": "2026-10-11",
+        "end": "2026-10-14"
       }
     }
   ]

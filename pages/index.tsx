@@ -52,6 +52,10 @@ function formatEventDisplay(start?: string | null, end?: string | null, location
   return `${s}–${e}${location ? ` • ${location}` : ''}`;
 }
 
+function getEventDisplay(conf: Pick<Conference, 'event_start' | 'event_end' | 'location'>): string {
+  return formatEventDisplay(conf.event_start, conf.event_end, conf.location);
+}
+
 function selectionTypeLabel(type: SelectionType | null): string {
   if (!type) return '-';
   switch (type) {
@@ -454,7 +458,9 @@ export default function HomePage() {
                             ) : null}
                           </button>
                         )}
-                        <div className="event-info">{formatEventDisplay(conference.event_start, conference.event_end, conference.location)}</div>
+                        {getEventDisplay(conference) ? (
+                          <div className="event-info">{getEventDisplay(conference)}</div>
+                        ) : null}
                       </div>
                     </td>
                     <td>{conference.rank ?? '-'}</td>
