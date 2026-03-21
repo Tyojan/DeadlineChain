@@ -104,11 +104,19 @@ export function isConferenceAvailable(
   }
 
   const threshold = computeNextAvailableDate(selectedConference, selection);
-  if (!threshold) {
+  // If computeNextAvailableDate couldn't determine a threshold (e.g., selected conference
+  // has no review dates), and the user has selected 'submit', use the selected
+  // conference's paper_deadline as the threshold so we only keep conferences whose
+  // submission deadlines are after the selected conference's submission.
+  let effectiveThreshold = threshold;
+  if (!effectiveThreshold && selection.selectedType === 'submit') {
+    effectiveThreshold = selectedConference.paper_deadline || null;
+  }
+  if (!effectiveThreshold) {
     return true;
   }
 
-  return compareIsoDate(target.paper_deadline, threshold) >= 0;
+  return compareIsoDate(target.paper_deadline, effectiveThreshold) >= 0;
 }
 
 export function pickEarliestConference(conferences: Conference[]): Conference | null {

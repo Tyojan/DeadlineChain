@@ -69,13 +69,13 @@ export default function HomePage() {
         if (tryJson && tryJson.ok) {
           const json = await tryJson.json();
           // try to also fetch CSV to fill missing metadata (rank/url)
-          let csvLookup: Record<string, { rank?: string; url?: string }> | undefined = undefined;
+          let csvLookup: Record<string, { rank?: string; url?: string; estimated?: boolean }> | undefined = undefined;
           try {
             const csvResp = await fetch('/conferences.csv');
             if (csvResp && csvResp.ok) {
               const csvText = await csvResp.text();
               const parsedCsv = parseConferenceCsv(csvText);
-              csvLookup = Object.fromEntries(parsedCsv.map((c) => [c.id, { rank: c.rank, url: c.url }]));
+              csvLookup = Object.fromEntries(parsedCsv.map((c) => [c.id, { rank: c.rank, url: c.url, estimated: c.estimated }]));
             }
           } catch (e) {
             // ignore CSV fetch/parse errors — JSON will still be used
@@ -287,6 +287,7 @@ export default function HomePage() {
             </thead>
             <tbody>
               {displayedConferences.map((conference) => {
+                const hasRejectable = Boolean(conference.r1_date || conference.r2_date || conference.revision_date);
                 const isEarliest = earliestConference?.id === conference.id;
                 const isSelectedDate = (date: string) =>
                   selection.selectedConference === conference.id && selection.selectedDate === date;
@@ -319,10 +320,10 @@ export default function HomePage() {
                   ...selection,
                   selectedType: 'R2'
                 });
-                const hasR1 = Boolean(conference.r1_date);
-                const hasR2 = Boolean(conference.r2_date);
-                if (availableIfR1 && hasR1) classes.push('available-r1');
-                if (availableIfR2 && hasR2) classes.push('available-r2');
+                  const hasR1 = Boolean(conference.r1_date);
+                  const hasR2 = Boolean(conference.r2_date);
+                  if (availableIfR1 && hasR1) classes.push('available-r1');
+                  if (availableIfR2 && hasR2) classes.push('available-r2');
 
                 const rowClass = classes.filter(Boolean).join(' ');
 
@@ -341,10 +342,16 @@ export default function HomePage() {
                           }}
                         >
                           {conference.name}
+                          {((conference.estimated === true) || (!hasRejectable && conference.paper_deadline)) ? (
+                            <span className="estimated">(Estimated)</span>
+                          ) : null}
                         </a>
                       ) : (
                         <button type="button" className="name-btn" onClick={() => { resetSelection(); }}>
                           {conference.name}
+                          {((conference.estimated === true) || (!hasRejectable && conference.paper_deadline)) ? (
+                            <span className="estimated">(Estimated)</span>
+                          ) : null}
                         </button>
                       )}
                     </td>

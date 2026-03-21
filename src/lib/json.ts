@@ -9,7 +9,7 @@ function pickDate(...candidates: Array<string | undefined>): string | null {
 
 export function convertJsonToConferences(
   raw: any,
-  csvLookup?: Record<string, { rank?: string; url?: string }>
+  csvLookup?: Record<string, { rank?: string; url?: string; estimated?: boolean }>
 ): Conference[] {
   if (!raw || !Array.isArray(raw.conferences)) return [];
 
@@ -30,8 +30,14 @@ export function convertJsonToConferences(
 
       const id = item.id ?? item.name ?? String(Math.random());
 
-      // try to fill missing rank/url from CSV lookup (don't overwrite JSON values)
+      // try to fill missing rank/url/estimated from CSV lookup (don't overwrite JSON values)
       const csvMeta = csvLookup?.[id];
+
+      function parseEstimated(v: any): boolean {
+        if (typeof v === 'boolean') return v;
+        if (typeof v === 'string') return ['1', 'true', 'yes', 'y'].includes(v.toLowerCase());
+        return false;
+      }
 
       const conf: Conference = {
         id: item.id ?? item.name ?? String(Math.random()),
@@ -51,6 +57,10 @@ export function convertJsonToConferences(
         r2_date: r2_date ?? '',
         revision_date: revision_date ?? '',
         camera_ready: item.deadlines?.camera_ready ?? '',
+        estimated:
+          typeof item.estimated !== 'undefined'
+            ? parseEstimated(item.estimated)
+            : parseEstimated(csvMeta?.estimated),
         event_start: event_start,
         event_end: event_end
       };

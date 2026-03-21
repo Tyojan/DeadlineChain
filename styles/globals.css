@@ -366,6 +366,14 @@ thead th {
   outline-offset: 2px;
 }
 
+/* Estimated label for conferences without registered rejectable dates */
+.estimated {
+  color: #e63946; /* red */
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 tr.earliest {
   background: #e7f7ea;
 }

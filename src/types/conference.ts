@@ -17,6 +17,7 @@ export type Conference = {
   camera_ready?: string;
   event_start: string;
   event_end: string;
+  estimated?: boolean;
 };
 
 export type SelectionState = {

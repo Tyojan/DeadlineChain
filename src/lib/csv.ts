@@ -58,7 +58,7 @@ function parseConferenceRow(header: string[], row: string): Conference {
 
   for (const field of REQUIRED_FIELDS) {
     if (!raw[field]) {
-      throw new Error(`必須項目が不足しています: ${field}`);
+      throw new Error(`Missing required field: ${field}`);
     }
   }
 
@@ -77,13 +77,17 @@ function parseConferenceRow(header: string[], row: string): Conference {
 
   for (const field of dateFields) {
     if (!isIsoDate(raw[field])) {
-      throw new Error(`${field} は YYYY-MM-DD 形式である必要があります: ${raw[field]}`);
+      throw new Error(`${field} must be in YYYY-MM-DD format: ${raw[field]}`);
     }
   }
 
   if (raw.camera_ready && !isIsoDate(raw.camera_ready)) {
-    throw new Error(`camera_ready は YYYY-MM-DD 形式である必要があります: ${raw.camera_ready}`);
+    throw new Error(`camera_ready must be in YYYY-MM-DD format: ${raw.camera_ready}`);
   }
+
+  // parse estimated flag if present (allow true/false, 1/0, yes/no)
+  const estimatedRaw = (raw['estimated'] || '').toString().trim().toLowerCase();
+  const estimated = ['1', 'true', 'yes', 'y'].includes(estimatedRaw);
 
   return {
     id: raw.id,
@@ -97,6 +101,7 @@ function parseConferenceRow(header: string[], row: string): Conference {
     r2_date: raw.r2_date,
     revision_date: raw.revision_date,
     camera_ready: raw.camera_ready || undefined,
+    estimated,
     event_start: raw.event_start,
     event_end: raw.event_end
   };
