@@ -283,6 +283,9 @@ export default function HomePage() {
                 const isEarliest = earliestConference?.id === conference.id;
                 const isSelectedDate = (date: string) =>
                   selection.selectedConference === conference.id && selection.selectedDate === date;
+                const isSelectedR1 = selection.selectedConference === conference.id && selection.selectedDate === conference.r1_date && selection.selectedType === 'R1';
+                const isSelectedR2 = selection.selectedConference === conference.id && selection.selectedDate === conference.r2_date && selection.selectedType === 'R2';
+                const isSelectedRevision = selection.selectedConference === conference.id && selection.selectedDate === conference.revision_date && selection.selectedType === 'Revision';
 
                 // 行の状態クラスを決定
                 const available = isConferenceAvailable(conference, selectedConference, selection);
@@ -362,7 +365,7 @@ export default function HomePage() {
                     </td>
                     {conference.r1_date ? (
                       <td
-                        className="clickable-cell"
+                        className={`clickable-cell ${isSelectedR1 ? 'selected-r1-td' : ''}`}
                         role="button"
                         tabIndex={0}
                         onClick={() => selectEvent(conference, 'R1', conference.r1_date)}
@@ -373,7 +376,7 @@ export default function HomePage() {
                           }
                         }}
                       >
-                        <div className={`date-btn${isSelectedDate(conference.r1_date) ? ' selected' : ''}`}>
+                        <div className={`date-btn${isSelectedDate(conference.r1_date) ? ' selected selected-r1' : ''}`}>
                           {formatShort(conference.r1_date)}
                         </div>
                         <div>
@@ -385,9 +388,9 @@ export default function HomePage() {
                         <span className="empty-cell" aria-hidden="true">&nbsp;</span>
                       </td>
                     )}
-                    {conference.r2_date ? (
+                      {conference.r2_date ? (
                       <td
-                        className="clickable-cell"
+                        className={`clickable-cell ${isSelectedR2 ? 'selected-r2-td' : ''}`}
                         role="button"
                         tabIndex={0}
                         onClick={() => selectEvent(conference, 'R2', conference.r2_date)}
@@ -398,7 +401,7 @@ export default function HomePage() {
                           }
                         }}
                       >
-                        <div className={`date-btn${isSelectedDate(conference.r2_date) ? ' selected' : ''}`}>
+                        <div className={`date-btn${isSelectedDate(conference.r2_date) ? ' selected selected-r2' : ''}`}>
                           {formatShort(conference.r2_date)}
                         </div>
                         <div>
@@ -412,7 +415,7 @@ export default function HomePage() {
                     )}
                     {conference.revision_date ? (
                       <td
-                        className="clickable-cell"
+                        className={`clickable-cell ${isSelectedRevision ? 'selected-revision-td' : ''}`}
                         role="button"
                         tabIndex={0}
                         onClick={() => selectEvent(conference, 'Revision', conference.revision_date)}
@@ -423,7 +426,7 @@ export default function HomePage() {
                           }
                         }}
                       >
-                        <div className={`date-btn${isSelectedDate(conference.revision_date) ? ' selected' : ''}`}>
+                        <div className={`date-btn${isSelectedDate(conference.revision_date) ? ' selected selected-revision' : ''}`}>
                           {formatShort(conference.revision_date)}
                         </div>
                       </td>
