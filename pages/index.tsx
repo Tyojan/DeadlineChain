@@ -64,7 +64,7 @@ export default function HomePage() {
   useEffect(() => {
     async function loadCsv() {
       try {
-        // まず JSON を優先して読み込む
+        // Prefer loading JSON first
         const tryJson = await fetch('/conference.json').catch(() => null);
         if (tryJson && tryJson.ok) {
           const json = await tryJson.json();
@@ -82,7 +82,7 @@ export default function HomePage() {
             csvLookup = undefined;
           }
 
-          // convertJsonToConferences を動的取り込みして依存を最小化
+          // Dynamically import convertJsonToConferences to minimize dependencies
           const { convertJsonToConferences } = await import('@/lib/json');
           const parsed = convertJsonToConferences(json, csvLookup);
           setConferences(parsed);
@@ -90,10 +90,10 @@ export default function HomePage() {
           return;
         }
 
-        // JSON が無ければ既存の CSV をフォールバックで読み込む
+        // If JSON is not available, fall back to loading the CSV
         const response = await fetch('/conferences.csv');
         if (!response.ok) {
-          throw new Error('conferences.csv の読み込みに失敗しました。');
+          throw new Error('Failed to load conferences.csv.');
         }
 
         const text = await response.text();
@@ -101,7 +101,7 @@ export default function HomePage() {
         setConferences(parsed);
         setErrorMessage(null);
       } catch (error) {
-        setErrorMessage(error instanceof Error ? error.message : 'データ読み込み中にエラーが発生しました。');
+        setErrorMessage(error instanceof Error ? error.message : 'An error occurred while loading data.');
       }
     }
 
@@ -122,7 +122,7 @@ export default function HomePage() {
   }, [conferences, rankFilter, selectedConference, selection]);
 
   const displayedConferences = useMemo(() => {
-    // 順に選択した会議（チェーン）を先頭に残す
+    // Keep conferences selected in order (the selection chain) at the front
     const chainConfs: Conference[] = selectionChain
       .map((s) => conferences.find((c) => c.id === s.selectedConference))
       .filter((c): c is Conference => Boolean(c));
@@ -163,14 +163,14 @@ export default function HomePage() {
   }
 
   /**
-   * カウントダウン表示コンポーネント
-   * - `target` は ISO 日付文字列（YYYY-MM-DD または YYYY-MM-DDThh:mm:ss 等）を想定
-   * - 日付が YYYY-MM-DD のみの場合は当日 23:59:59 を締切時刻とする
+   * Countdown display component
+   * - `target` is expected to be an ISO date string (YYYY-MM-DD or YYYY-MM-DDThh:mm:ss etc.)
+   * - If the date is only YYYY-MM-DD, treat it as the end of that day (23:59:59 local time)
    */
   function Countdown({ target, mode = 'days' }: { target?: string | null; mode?: 'days' | 'seconds' }) {
     const [now, setNow] = useState<Date>(() => new Date());
 
-    // 目標日時を Date に変換（ローカルタイムで解釈）
+    // Convert target string to Date (interpreted in local time)
     function parseTarget(t?: string | null): Date | null {
       if (!t) return null;
       const m = t.match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -185,7 +185,7 @@ export default function HomePage() {
       return dt;
     }
 
-    // 更新間隔はモードによって変える（秒表示は1秒、日表示は60秒）
+    // Update interval depends on mode (1s for seconds, 60s for days)
     useEffect(() => {
       const interval = mode === 'seconds' ? 1000 : 60 * 1000;
       const id = setInterval(() => setNow(new Date()), interval);
@@ -196,14 +196,14 @@ export default function HomePage() {
     if (!tgt) return <span className="countdown">-</span>;
 
     const diffMs = tgt.getTime() - now.getTime();
-    if (diffMs <= 0) return <span className="countdown">締切済み</span>;
+    if (diffMs <= 0) return <span className="countdown">Past deadline</span>;
 
     if (mode === 'days') {
       const diffDays = Math.ceil(diffMs / (24 * 3600 * 1000));
-      return <span className="countdown">{diffDays}日</span>;
+      return <span className="countdown">{diffDays} days</span>;
     }
 
-    // seconds モード：HH:MM:SS（必要なら日数も付ける）
+    // seconds mode: HH:MM:SS (include days prefix if needed)
     const totalSeconds = Math.floor(diffMs / 1000);
     const days = Math.floor(totalSeconds / (24 * 3600));
     const hh = Math.floor((totalSeconds % (24 * 3600)) / 3600);
@@ -212,7 +212,7 @@ export default function HomePage() {
     const pad = (n: number) => String(n).padStart(2, '0');
     return (
       <span className="countdown">
-        {days > 0 ? `${days}日 ` : ''}{pad(hh)}:{pad(mm)}:{pad(ss)}
+        {days > 0 ? `${days} days ` : ''}{pad(hh)}:{pad(mm)}:{pad(ss)}
       </span>
     );
   }
@@ -230,7 +230,7 @@ export default function HomePage() {
               resetSelection();
             }
           }}
-          title="クリックで選択を解除"
+          title="Click to clear selection"
         >
           DeadlineChain
         </h1>
@@ -245,35 +245,30 @@ export default function HomePage() {
               resetSelection();
             }
           }}
-          title="クリックで選択を解除"
+          title="Click to clear selection"
         >
-          リジェクト後に次に投稿可能な会議を可視化
+          Visualize next-postable conferences after rejection
         </p>
 
         <div className="controls">
-          <label htmlFor="rank-filter">ランク:</label>
+          <label htmlFor="rank-filter">Rank:</label>
           <select
             id="rank-filter"
             value={rankFilter}
             onChange={(event) => setRankFilter(event.target.value as RankFilter)}
           >
-            <option value="no_filter">ランク指定なし（全表示）</option>
-            <option value="a_star_only">A*のみ</option>
-            <option value="a_or_higher">A以上</option>
-            <option value="b_or_higher">B以上</option>
-            <option value="c_or_higher">C以上</option>
+            <option value="no_filter">All ranks</option>
+            <option value="a_star_only">A* only</option>
+            <option value="a_or_higher">A or higher</option>
+            <option value="b_or_higher">B or higher</option>
+            <option value="c_or_higher">C or higher</option>
           </select>
 
           <button type="button" onClick={resetSelection}>
-            選択を解除
+            Clear selection
           </button>
         </div>
 
-        <div className="status">
-          <p>
-            選択: {selection.selectedConference ?? '-'} / {selectionTypeLabel(selection.selectedType)} / {formatFull(selection.selectedDate ?? null)}
-          </p>
-        </div>
 
         {errorMessage && <p className="error">{errorMessage}</p>}
 
@@ -281,13 +276,13 @@ export default function HomePage() {
           <table>
             <thead>
                 <tr>
-                <th>会議名</th>
-                <th>rank</th>
+                <th>Conference Name</th>
+                <th>Rank</th>
                 <th>Abstract Deadline</th>
-                <th>Submission deadline</th>
+                <th>Submission Deadline</th>
                 <th>Early Reject Notification</th>
                 <th>Notification</th>
-                <th>Revision</th>
+                <th>Revision Deadline</th>
               </tr>
             </thead>
             <tbody>
@@ -298,24 +293,24 @@ export default function HomePage() {
                 const isSelectedR1 = selection.selectedConference === conference.id && selection.selectedDate === conference.r1_date && selection.selectedType === 'R1';
                 const isSelectedR2 = selection.selectedConference === conference.id && selection.selectedDate === conference.r2_date && selection.selectedType === 'R2';
                 const isSelectedRevision = selection.selectedConference === conference.id && selection.selectedDate === conference.revision_date && selection.selectedType === 'Revision';
-                // チェーン内に同じ会議・日付・タイプの選択があるか（過去の選択も赤枠表示するため）
+                // Check if the same conference/date/type exists in the chain (so past selections keep red framing)
                 const isChainedR1 = selectionChain.some((s) => s.selectedConference === conference.id && s.selectedDate === conference.r1_date && s.selectedType === 'R1');
                 const isChainedR2 = selectionChain.some((s) => s.selectedConference === conference.id && s.selectedDate === conference.r2_date && s.selectedType === 'R2');
                 const isChainedRevision = selectionChain.some((s) => s.selectedConference === conference.id && s.selectedDate === conference.revision_date && s.selectedType === 'Revision');
 
-                // 行の状態クラスを決定
+                // Determine row state classes
                 const available = isConferenceAvailable(conference, selectedConference, selection);
                 const classes = [isEarliest ? 'earliest' : ''];
-                // 常にタイル表示クラスを付与
+                // Always add the tiled-row class
                 classes.push('tiled-row');
-                // チェーン内の会議はすべて選択済として表示を残す
+                // Keep chain conferences visible as selected
                 if (selectionChain.find((s) => s.selectedConference === conference.id)) classes.push('selected-conf');
 
-                // 何も選択されていない初期状態の行に薄い水色を付与（rejectable が無くても白にしない）
+                // Apply a light cyan background to idle rows (do not make them white even if not rejectable)
                 const isIdle = !selection.selectedConference;
                 if (isIdle) classes.push('idle-row');
 
-                // 予測的に、R1 / R2 の場合にその会議が利用可能かを計算して表示用クラスを付与
+                // Predictively compute availability for R1 / R2 and add display classes
                 const availableIfR1 = isConferenceAvailable(conference, selectedConference, {
                   ...selection,
                   selectedType: 'R1'
@@ -341,7 +336,7 @@ export default function HomePage() {
                           rel="noopener noreferrer"
                           className="name-link"
                           onClick={() => {
-                            // 外部ページへ飛ぶので選択は解除しておく
+                            // Navigating to external page, so clear selection
                             resetSelection();
                           }}
                         >
