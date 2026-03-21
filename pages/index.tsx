@@ -57,6 +57,7 @@ function selectionTypeLabel(type: SelectionType | null): string {
 export default function HomePage() {
   const [conferences, setConferences] = useState<Conference[]>([]);
   const [selection, setSelection] = useState<SelectionState>(INITIAL_SELECTION);
+  const [selectionChain, setSelectionChain] = useState<SelectionState[]>([]);
   const [rankFilter, setRankFilter] = useState<RankFilter>('no_filter');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -121,13 +122,16 @@ export default function HomePage() {
   }, [conferences, rankFilter, selectedConference, selection]);
 
   const displayedConferences = useMemo(() => {
-    if (!selectedConference) {
-      return availableConferences;
-    }
+    // 順に選択した会議（チェーン）を先頭に残す
+    const chainConfs: Conference[] = selectionChain
+      .map((s) => conferences.find((c) => c.id === s.selectedConference))
+      .filter((c): c is Conference => Boolean(c));
 
-    const otherConferences = availableConferences.filter((conference) => conference.id !== selectedConference.id);
-    return [selectedConference, ...otherConferences];
-  }, [availableConferences, selectedConference]);
+    const chainIds = new Set(chainConfs.map((c) => c.id));
+
+    const rest = availableConferences.filter((c) => !chainIds.has(c.id));
+    return [...chainConfs, ...rest];
+  }, [availableConferences, selectionChain, conferences]);
 
   const earliestConference = useMemo(() => pickEarliestConference(availableConferences), [availableConferences]);
 
@@ -144,10 +148,18 @@ export default function HomePage() {
       selectedDate: date,
       selectedType: type
     });
+    setSelectionChain((prev) => {
+      const last = prev[prev.length - 1];
+      if (last && last.selectedConference === conference.id && last.selectedDate === date && last.selectedType === type) {
+        return prev;
+      }
+      return [...prev, { selectedConference: conference.id, selectedDate: date, selectedType: type }];
+    });
   }
 
   function resetSelection() {
     setSelection(INITIAL_SELECTION);
+    setSelectionChain([]);
   }
 
   /**
@@ -252,7 +264,7 @@ export default function HomePage() {
             <option value="c_or_higher">C以上</option>
           </select>
 
-          <button type="button" onClick={() => setSelection(INITIAL_SELECTION)}>
+          <button type="button" onClick={resetSelection}>
             選択を解除
           </button>
         </div>
@@ -286,13 +298,18 @@ export default function HomePage() {
                 const isSelectedR1 = selection.selectedConference === conference.id && selection.selectedDate === conference.r1_date && selection.selectedType === 'R1';
                 const isSelectedR2 = selection.selectedConference === conference.id && selection.selectedDate === conference.r2_date && selection.selectedType === 'R2';
                 const isSelectedRevision = selection.selectedConference === conference.id && selection.selectedDate === conference.revision_date && selection.selectedType === 'Revision';
+                // チェーン内に同じ会議・日付・タイプの選択があるか（過去の選択も赤枠表示するため）
+                const isChainedR1 = selectionChain.some((s) => s.selectedConference === conference.id && s.selectedDate === conference.r1_date && s.selectedType === 'R1');
+                const isChainedR2 = selectionChain.some((s) => s.selectedConference === conference.id && s.selectedDate === conference.r2_date && s.selectedType === 'R2');
+                const isChainedRevision = selectionChain.some((s) => s.selectedConference === conference.id && s.selectedDate === conference.revision_date && s.selectedType === 'Revision');
 
                 // 行の状態クラスを決定
                 const available = isConferenceAvailable(conference, selectedConference, selection);
                 const classes = [isEarliest ? 'earliest' : ''];
                 // 常にタイル表示クラスを付与
                 classes.push('tiled-row');
-                if (selection.selectedConference === conference.id) classes.push('selected-conf');
+                // チェーン内の会議はすべて選択済として表示を残す
+                if (selectionChain.find((s) => s.selectedConference === conference.id)) classes.push('selected-conf');
 
                 // 何も選択されていない初期状態の行に薄い水色を付与（rejectable が無くても白にしない）
                 const isIdle = !selection.selectedConference;
@@ -331,7 +348,7 @@ export default function HomePage() {
                           {conference.name}
                         </a>
                       ) : (
-                        <button type="button" className="name-btn" onClick={() => setSelection(INITIAL_SELECTION)}>
+                        <button type="button" className="name-btn" onClick={() => { resetSelection(); }}>
                           {conference.name}
                         </button>
                       )}
@@ -365,7 +382,7 @@ export default function HomePage() {
                     </td>
                     {conference.r1_date ? (
                       <td
-                        className={`clickable-cell ${isSelectedR1 ? 'selected-r1-td' : ''}`}
+                        className={`clickable-cell ${(isSelectedR1 || isChainedR1) ? 'selected-r1-td' : ''}`}
                         role="button"
                         tabIndex={0}
                         onClick={() => selectEvent(conference, 'R1', conference.r1_date)}
@@ -376,7 +393,7 @@ export default function HomePage() {
                           }
                         }}
                       >
-                        <div className={`date-btn${isSelectedDate(conference.r1_date) ? ' selected selected-r1' : ''}`}>
+                        <div className={`date-btn${(isSelectedDate(conference.r1_date) || isChainedR1) ? ' selected selected-r1' : ''}`}>
                           {formatShort(conference.r1_date)}
                         </div>
                         <div>
@@ -390,7 +407,7 @@ export default function HomePage() {
                     )}
                       {conference.r2_date ? (
                       <td
-                        className={`clickable-cell ${isSelectedR2 ? 'selected-r2-td' : ''}`}
+                        className={`clickable-cell ${(isSelectedR2 || isChainedR2) ? 'selected-r2-td' : ''}`}
                         role="button"
                         tabIndex={0}
                         onClick={() => selectEvent(conference, 'R2', conference.r2_date)}
@@ -401,7 +418,7 @@ export default function HomePage() {
                           }
                         }}
                       >
-                        <div className={`date-btn${isSelectedDate(conference.r2_date) ? ' selected selected-r2' : ''}`}>
+                        <div className={`date-btn${(isSelectedDate(conference.r2_date) || isChainedR2) ? ' selected selected-r2' : ''}`}>
                           {formatShort(conference.r2_date)}
                         </div>
                         <div>
@@ -415,7 +432,7 @@ export default function HomePage() {
                     )}
                     {conference.revision_date ? (
                       <td
-                        className={`clickable-cell ${isSelectedRevision ? 'selected-revision-td' : ''}`}
+                        className={`clickable-cell ${(isSelectedRevision || isChainedRevision) ? 'selected-revision-td' : ''}`}
                         role="button"
                         tabIndex={0}
                         onClick={() => selectEvent(conference, 'Revision', conference.revision_date)}
@@ -426,7 +443,7 @@ export default function HomePage() {
                           }
                         }}
                       >
-                        <div className={`date-btn${isSelectedDate(conference.revision_date) ? ' selected selected-revision' : ''}`}>
+                        <div className={`date-btn${(isSelectedDate(conference.revision_date) || isChainedRevision) ? ' selected selected-revision' : ''}`}>
                           {formatShort(conference.revision_date)}
                         </div>
                       </td>
