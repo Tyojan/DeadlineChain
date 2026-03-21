@@ -1,8 +1,8 @@
-import { Conference, RankFilter, SelectionState } from '@/types/conference';
+import type { Conference, RankFilter, SelectionState, Rank } from '@/types/conference';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-const RANK_ORDER: Record<Conference['Rank'], number> = {
+const RANK_ORDER: Record<Rank, number> = {
   C: 0,
   B: 1,
   A: 2,

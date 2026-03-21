@@ -1,9 +1,0 @@
-id,name,rank,area,location,url,paper_deadline,r1_date,r2_date,revision_date,camera_ready,event_start,event_end
-ccs2026,ACM CCS 2026,A*,security,Seoul,https://www.sigsac.org/ccs/CCS2026/,2026-04-29,2026-06-03,2026-07-17,2026-08-14,2026-09-17,2026-10-12,2026-10-16
-usenixsec2027c1,USENIX Security 2027 Cycle 1,A*,security,Denver,https://www.usenix.org/conference/usenixsecurity27,2026-08-25,2026-10-01,2026-11-15,2026-12-10,2027-01-20,2027-08-11,2027-08-13
-usenixsec2027c2,USENIX Security 2027 Cycle 2,A*,security,Denver,https://www.usenix.org/conference/usenixsecurity27,2027-01-26,2027-03-01,2027-04-10,2027-05-05,2027-06-01,2027-08-11,2027-08-13
-esorics2026,ESORICS 2026,A,security,Rome,https://esorics2026.org,2026-04-21,2026-05-20,2026-06-12,2026-07-01,2026-06-26,2026-09-21,2026-09-25
-atc2026,USENIX ATC 2026,A,systems,Hong Kong,https://www.usenix.org/conference/atc26,2026-06-10,2026-08-01,2026-09-18,2026-10-10,2026-10-16,2026-11-16,2026-11-18
-iwsec2026,IWSEC 2026,-,security,Tokyo,https://www.iwsec.org/2026/,2026-06-08,2026-07-10,2026-08-20,2026-09-08,2026-09-17,2026-11-24,2026-11-26
-ares2026,ARES 2026,B,security,Linkoping,https://www.ares-conference.eu/,2026-03-09,2026-04-10,2026-05-13,2026-05-27,2026-06-13,2026-08-24,2026-08-27
-systex26,SysTex 26,C,systems,Edinburgh,https://systex-workshop.github.io/,2026-02-20,2026-02-28,2026-03-10,2026-03-24,,2026-04-27,2026-04-27

@@ -7,10 +7,7 @@ function pickDate(...candidates: Array<string | undefined>): string | null {
   return null;
 }
 
-export function convertJsonToConferences(
-  raw: any,
-  csvLookup?: Record<string, { rank?: string; url?: string; estimated?: boolean }>
-): Conference[] {
+export function convertJsonToConferences(raw: any): Conference[] {
   if (!raw || !Array.isArray(raw.conferences)) return [];
 
   const out: Conference[] = [];
@@ -30,9 +27,6 @@ export function convertJsonToConferences(
 
       const id = item.id ?? item.name ?? String(Math.random());
 
-      // try to fill missing rank/url/estimated from CSV lookup (don't overwrite JSON values)
-      const csvMeta = csvLookup?.[id];
-
       function parseEstimated(v: any): boolean {
         if (typeof v === 'boolean') return v;
         if (typeof v === 'string') return ['1', 'true', 'yes', 'y'].includes(v.toLowerCase());
@@ -40,27 +34,19 @@ export function convertJsonToConferences(
       }
 
       const conf: Conference = {
-        id: item.id ?? item.name ?? String(Math.random()),
+        id: id,
         name: item.name ?? item.id ?? 'Unknown',
-        rank:
-          item.rank && ['A*', 'A', 'B', 'C'].includes(item.rank)
-            ? (item.rank as any)
-            : csvMeta && ['A*', 'A', 'B', 'C'].includes(csvMeta.rank ?? '')
-            ? (csvMeta.rank as any)
-            : undefined,
+        rank: item.rank && ['A*', 'A', 'B', 'C'].includes(item.rank) ? (item.rank as any) : undefined,
         area: item.area ?? '',
         location: item.location ?? '',
-        url: item.url ?? item.cfp ?? (csvMeta?.url ?? ''),
+        url: item.url ?? item.cfp ?? '',
         paper_deadline: paper_deadline,
         abstract_deadline: abstract_deadline ?? '',
         r1_date: r1_date ?? '',
         r2_date: r2_date ?? '',
         revision_date: revision_date ?? '',
         camera_ready: item.deadlines?.camera_ready ?? '',
-        estimated:
-          typeof item.estimated !== 'undefined'
-            ? parseEstimated(item.estimated)
-            : parseEstimated(csvMeta?.estimated),
+        estimated: typeof item.estimated !== 'undefined' ? parseEstimated(item.estimated) : false,
         event_start: event_start,
         event_end: event_end
       };

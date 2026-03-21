@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { parseConferenceCsv } from '@/lib/csv';
+// CSV fallback removed — use JSON only
 import {
   compareIsoDate,
   computeNextAvailableDate,
@@ -7,6 +7,7 @@ import {
   isRankIncluded,
   pickEarliestConference
 } from '@/lib/deadline';
+import { convertJsonToConferences } from '@/lib/json';
 import { Conference, RankFilter, SelectionState, SelectionType } from '@/types/conference';
 
 const INITIAL_SELECTION: SelectionState = {
@@ -77,40 +78,11 @@ export default function HomePage() {
   useEffect(() => {
     async function loadCsv() {
       try {
-        // Prefer loading JSON first
-        const tryJson = await fetch('/conference.json').catch(() => null);
-        if (tryJson && tryJson.ok) {
-          const json = await tryJson.json();
-          // try to also fetch CSV to fill missing metadata (rank/url)
-          let csvLookup: Record<string, { rank?: string; url?: string; estimated?: boolean }> | undefined = undefined;
-          try {
-            const csvResp = await fetch('/conferences.csv');
-            if (csvResp && csvResp.ok) {
-              const csvText = await csvResp.text();
-              const parsedCsv = parseConferenceCsv(csvText);
-              csvLookup = Object.fromEntries(parsedCsv.map((c) => [c.id, { rank: c.rank, url: c.url, estimated: c.estimated }]));
-            }
-          } catch (e) {
-            // ignore CSV fetch/parse errors — JSON will still be used
-            csvLookup = undefined;
-          }
-
-          // Dynamically import convertJsonToConferences to minimize dependencies
-          const { convertJsonToConferences } = await import('@/lib/json');
-          const parsed = convertJsonToConferences(json, csvLookup);
-          setConferences(parsed);
-          setErrorMessage(null);
-          return;
-        }
-
-        // If JSON is not available, fall back to loading the CSV
-        const response = await fetch('/conferences.csv');
-        if (!response.ok) {
-          throw new Error('Failed to load conferences.csv.');
-        }
-
-        const text = await response.text();
-        const parsed = parseConferenceCsv(text).sort((a, b) => compareIsoDate(a.paper_deadline, b.paper_deadline));
+        // Load JSON only (no CSV fallback)
+        const resp = await fetch('/conference.json');
+        if (!resp.ok) throw new Error('Failed to load conference.json.');
+        const json = await resp.json();
+        const parsed = convertJsonToConferences(json);
         setConferences(parsed);
         setErrorMessage(null);
       } catch (error) {
