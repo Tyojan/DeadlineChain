@@ -424,6 +424,28 @@ thead th {
   font-weight: 600;
 }
 
+/* イベント日付と開催地の小さな表示 */
+.event-info {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* 会議名とイベント情報を縦に並べるコンテナ */
+.name-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* 会議名をもう少し大きくする */
+.name-link,
+.name-btn {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
 tr.earliest {
   background: #e7f7ea;
 }

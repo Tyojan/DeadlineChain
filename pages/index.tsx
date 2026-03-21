@@ -38,6 +38,19 @@ function formatFull(isoDate?: string | null): string {
   return `${mname} ${day}, ${year}`;
 }
 
+function formatEventDisplay(start?: string | null, end?: string | null, location?: string | null): string {
+  if (!start && !end && !location) return '';
+  if (!start && !end) return location ?? '';
+  if (!start) return `${location ?? ''}`.trim();
+  if (!end || start === end) {
+    const d = formatFull(start);
+    return `${d}${location ? ` • ${location}` : ''}`;
+  }
+  const s = formatShort(start);
+  const e = formatShort(end);
+  return `${s}–${e}${location ? ` • ${location}` : ''}`;
+}
+
 function selectionTypeLabel(type: SelectionType | null): string {
   if (!type) return '-';
   switch (type) {
@@ -444,30 +457,33 @@ export default function HomePage() {
                 return (
                   <tr key={conference.id} className={rowClass}>
                     <td>
-                      {conference.url ? (
-                        <a
-                          href={conference.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="name-link"
-                          onClick={() => {
-                            // Navigating to external page, so clear selection
-                            resetSelection();
-                          }}
-                        >
-                          {conference.name}
-                          {((conference.estimated === true) || (!hasRejectable && conference.paper_deadline)) ? (
-                            <span className="estimated">(Estimated)</span>
-                          ) : null}
-                        </a>
-                      ) : (
-                        <button type="button" className="name-btn" onClick={() => { resetSelection(); }}>
-                          {conference.name}
-                          {((conference.estimated === true) || (!hasRejectable && conference.paper_deadline)) ? (
-                            <span className="estimated">(Estimated)</span>
-                          ) : null}
-                        </button>
-                      )}
+                      <div className="name-container">
+                        {conference.url ? (
+                          <a
+                            href={conference.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="name-link"
+                            onClick={() => {
+                              // Navigating to external page, so clear selection
+                              resetSelection();
+                            }}
+                          >
+                            {conference.name}
+                            {((conference.estimated === true) || (!hasRejectable && conference.paper_deadline)) ? (
+                              <span className="estimated">(Estimated)</span>
+                            ) : null}
+                          </a>
+                        ) : (
+                          <button type="button" className="name-btn" onClick={() => { resetSelection(); }}>
+                            {conference.name}
+                            {((conference.estimated === true) || (!hasRejectable && conference.paper_deadline)) ? (
+                              <span className="estimated">(Estimated)</span>
+                            ) : null}
+                          </button>
+                        )}
+                        <div className="event-info">{formatEventDisplay(conference.event_start, conference.event_end, conference.location)}</div>
+                      </div>
                     </td>
                     <td>{conference.rank ?? '-'}</td>
                     <td>
