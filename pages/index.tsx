@@ -122,12 +122,20 @@ export default function HomePage() {
   }, [conferences, rankFilter, selectedConference, selection]);
 
   const displayedConferences = useMemo(() => {
-    // Keep conferences selected in order (the selection chain) at the front
-    const chainConfs: Conference[] = selectionChain
-      .map((s) => conferences.find((c) => c.id === s.selectedConference))
-      .filter((c): c is Conference => Boolean(c));
+    // Keep conferences selected in order (the selection chain) at the front.
+    // Ensure each conference appears only once even if selected multiple times.
+    const chainConfs: Conference[] = [];
+    const seen = new Set<string>();
+    for (const s of selectionChain) {
+      if (!s.selectedConference) continue;
+      const conf = conferences.find((c) => c.id === s.selectedConference);
+      if (conf && !seen.has(conf.id)) {
+        seen.add(conf.id);
+        chainConfs.push(conf);
+      }
+    }
 
-    const chainIds = new Set(chainConfs.map((c) => c.id));
+    const chainIds = seen;
 
     const rest = availableConferences.filter((c) => !chainIds.has(c.id));
     return [...chainConfs, ...rest];
@@ -149,11 +157,31 @@ export default function HomePage() {
       selectedType: type
     });
     setSelectionChain((prev) => {
-      const last = prev[prev.length - 1];
-      if (last && last.selectedConference === conference.id && last.selectedDate === date && last.selectedType === type) {
-        return prev;
+      // Replace any existing entry for the same conference so only one date-per-row is kept
+      // Additionally, when the user selects a new `submit`, convert the previous
+      // `submit` entry (if any) into a chained rejection entry (R2) so its
+      // notification date is shown in red on the next screen.
+      let filtered = prev.filter((s) => s.selectedConference !== conference.id);
+      // find the previous submit (if any) and convert it to an R2/chained entry
+      const prevSubmit = prev.find((s) => s.selectedType === 'submit' && s.selectedConference !== conference.id);
+      if (prevSubmit) {
+        const prevConf = conferences.find((c) => c.id === prevSubmit.selectedConference);
+        if (prevConf) {
+          const rejectDate = prevConf.r2_date || prevConf.revision_date || prevConf.r1_date || prevConf.paper_deadline || '';
+          // remove any existing entries for that conference, then add R2 entry
+          filtered = filtered.filter((s) => s.selectedConference !== prevConf.id);
+          if (rejectDate) {
+            filtered.push({ selectedConference: prevConf.id, selectedDate: rejectDate, selectedType: 'R2' });
+          }
+        }
       }
-      return [...prev, { selectedConference: conference.id, selectedDate: date, selectedType: type }];
+      // ensure no lingering submit entries remain (keep only the new submit when adding)
+      filtered = filtered.filter((s) => s.selectedType !== 'submit');
+      const last = filtered[filtered.length - 1];
+      if (last && last.selectedConference === conference.id && last.selectedDate === date && last.selectedType === type) {
+        return filtered;
+      }
+      return [...filtered, { selectedConference: conference.id, selectedDate: date, selectedType: type }];
     });
   }
 
@@ -247,7 +275,7 @@ export default function HomePage() {
           }}
           title="Click to clear selection"
         >
-          Visualize next-postable conferences after rejection
+          Visualize next conferences you can submit to after rejection
         </p>
 
         <div className="controls">
@@ -291,6 +319,7 @@ export default function HomePage() {
                 const isEarliest = earliestConference?.id === conference.id;
                 const isSelectedDate = (date: string) =>
                   selection.selectedConference === conference.id && selection.selectedDate === date;
+                const isSelectedSubmit = selection.selectedConference === conference.id && selection.selectedDate === conference.paper_deadline && selection.selectedType === 'submit';
                 const isSelectedR1 = selection.selectedConference === conference.id && selection.selectedDate === conference.r1_date && selection.selectedType === 'R1';
                 const isSelectedR2 = selection.selectedConference === conference.id && selection.selectedDate === conference.r2_date && selection.selectedType === 'R2';
                 const isSelectedRevision = selection.selectedConference === conference.id && selection.selectedDate === conference.revision_date && selection.selectedType === 'Revision';
@@ -298,6 +327,7 @@ export default function HomePage() {
                 const isChainedR1 = selectionChain.some((s) => s.selectedConference === conference.id && s.selectedDate === conference.r1_date && s.selectedType === 'R1');
                 const isChainedR2 = selectionChain.some((s) => s.selectedConference === conference.id && s.selectedDate === conference.r2_date && s.selectedType === 'R2');
                 const isChainedRevision = selectionChain.some((s) => s.selectedConference === conference.id && s.selectedDate === conference.revision_date && s.selectedType === 'Revision');
+                const isChainedSubmit = selectionChain.some((s) => s.selectedConference === conference.id && s.selectedDate === conference.paper_deadline && s.selectedType === 'submit');
 
                 // Determine row state classes
                 const available = isConferenceAvailable(conference, selectedConference, selection);
@@ -305,25 +335,46 @@ export default function HomePage() {
                 // Always add the tiled-row class
                 classes.push('tiled-row');
                 // Keep chain conferences visible as selected
-                if (selectionChain.find((s) => s.selectedConference === conference.id)) classes.push('selected-conf');
+                const isChainOrSelected = selection.selectedConference === conference.id || Boolean(selectionChain.find((s) => s.selectedConference === conference.id));
+                if (isChainOrSelected) classes.push('selected-conf');
 
                 // Apply a light cyan background to idle rows (do not make them white even if not rejectable)
                 const isIdle = !selection.selectedConference;
                 if (isIdle) classes.push('idle-row');
 
-                // Predictively compute availability for R1 / R2 and add display classes
-                const availableIfR1 = isConferenceAvailable(conference, selectedConference, {
-                  ...selection,
-                  selectedType: 'R1'
-                });
-                const availableIfR2 = isConferenceAvailable(conference, selectedConference, {
-                  ...selection,
-                  selectedType: 'R2'
-                });
-                  const hasR1 = Boolean(conference.r1_date);
-                  const hasR2 = Boolean(conference.r2_date);
-                  if (availableIfR1 && hasR1) classes.push('available-r1');
-                  if (availableIfR2 && hasR2) classes.push('available-r2');
+                // Predictively compute availability for R1 / R2 based on the SELECTED conference
+                // Green (available-r2): conferences whose submission deadline is after the
+                // selected conference's Notification (R2) date (or the selected R2 date if user clicked one).
+                // Yellow (available-r1): only when the selected conference has an Early Reject (R1)
+                // date (or the user selected an R1 date), and the target's submission deadline
+                // is on/after that R1 date.
+                let availableIfR1 = false;
+                let availableIfR2 = false;
+                const selR1 = selectedConference ? (selection.selectedType === 'R1' && selection.selectedDate ? selection.selectedDate : selectedConference.r1_date) : null;
+                const selR2 = selectedConference ? (selection.selectedType === 'R2' && selection.selectedDate ? selection.selectedDate : selectedConference.r2_date) : null;
+                try {
+                  if (selR1) {
+                    availableIfR1 = compareIsoDate(conference.paper_deadline, selR1) >= 0;
+                  }
+                } catch (e) {
+                  availableIfR1 = false;
+                }
+                try {
+                  if (selR2) {
+                    availableIfR2 = compareIsoDate(conference.paper_deadline, selR2) >= 0;
+                  }
+                } catch (e) {
+                  availableIfR2 = false;
+                }
+                const selHasR1 = Boolean(selectedConference && (selectedConference.r1_date || selection.selectedType === 'R1'));
+                const selHasR2 = Boolean(selectedConference && (selectedConference.r2_date || selection.selectedType === 'R2'));
+                // Do not mark the currently-selected or chained rows as "available" —
+                // that would be visually contradictory (a selected row shouldn't also
+                // appear as a candidate to submit to itself).
+                if (!isChainOrSelected) {
+                  if (selHasR1 && availableIfR1) classes.push('available-r1');
+                  if (selHasR2 && availableIfR2) classes.push('available-r2');
+                }
 
                 const rowClass = classes.filter(Boolean).join(' ');
 
@@ -364,7 +415,7 @@ export default function HomePage() {
                       )}
                     </td>
                     <td
-                      className="clickable-cell"
+                      className={`clickable-cell ${(isSelectedSubmit || isChainedSubmit) ? 'selected-submit-td' : ''}`}
                       role="button"
                       tabIndex={0}
                       onClick={() => selectEvent(conference, 'submit', conference.paper_deadline)}

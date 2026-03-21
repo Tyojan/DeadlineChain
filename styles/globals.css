@@ -197,9 +197,22 @@ table {
 th,
 td {
   border-bottom: 1px solid #e3e9f2;
-  text-align: left;
+  text-align: center;
   padding: 10px 8px;
   font-size: 14px;
+}
+
+/* Keep the first column (Conference Name) left-aligned */
+th:first-child,
+td:first-child {
+  text-align: left;
+}
+
+/* Ensure name buttons/links in the first column are left-aligned */
+td:first-child .name-btn,
+td:first-child .name-link {
+  justify-content: flex-start;
+  padding-left: 8px;
 }
 
 th {
@@ -271,6 +284,15 @@ tr.selected-conf .date-btn.selected.selected-revision {
 .clickable-cell.selected-r1-td .date-btn,
 .clickable-cell.selected-r2-td .date-btn,
 .clickable-cell.selected-revision-td .date-btn {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+/* Submission selected: blue thick inset border on td */
+.clickable-cell.selected-submit-td {
+  box-shadow: inset 0 0 0 3px rgba(10,130,220,0.95) !important;
+}
+.clickable-cell.selected-submit-td .date-btn {
   background: transparent !important;
   color: inherit !important;
 }

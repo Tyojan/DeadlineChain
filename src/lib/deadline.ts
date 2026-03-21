@@ -2,7 +2,7 @@ import { Conference, RankFilter, SelectionState } from '@/types/conference';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-const RANK_ORDER: Record<Conference['rank'], number> = {
+const RANK_ORDER: Record<Conference['Rank'], number> = {
   C: 0,
   B: 1,
   A: 2,
@@ -15,6 +15,13 @@ function toDate(dateText: string): Date {
     throw new Error(`不正な日付です: ${dateText}`);
   }
   return date;
+}
+
+// helper: extract first ISO date (YYYY-MM-DD) from a string (handles ranges like 2026-08-02_to_2026-09-02)
+function extractIso(v?: string | null): string | null {
+  if (!v) return null;
+  const m = v.match(/(\d{4}-\d{2}-\d{2})/);
+  return m ? m[1] : null;
 }
 
 export function addDays(dateText: string, days: number): string {
@@ -31,12 +38,7 @@ export function computeNextAvailableDate(conference: Conference, selection: Sele
   if (!selection.selectedType) {
     return null;
   }
-  // helper: extract first ISO date (YYYY-MM-DD) from value (handles ranges like 2026-08-02_to_2026-09-02)
-  function extractIso(v?: string | null): string | null {
-    if (!v) return null;
-    const m = v.match(/(\d{4}-\d{2}-\d{2})/);
-    return m ? m[1] : null;
-  }
+  // use module-level extractIso
 
   // Determine base date with fallbacks when some review dates are missing.
   if (selection.selectedType === 'submit') {
@@ -45,33 +47,23 @@ export function computeNextAvailableDate(conference: Conference, selection: Sele
   }
 
   if (selection.selectedType === 'R1') {
-    // prefer r1_date; if missing, fall back to r2_date (Notification)
-    const base = extractIso(conference.r1_date) ?? extractIso(conference.r2_date) ?? extractIso(conference.revision_date);
-    if (!base) return null;
-    try {
-      return addDays(base, 14);
-    } catch (e) {
-      return null;
-    }
+    // Use the selected R1 date (or the conference's R1/R2/Revision fallback) directly.
+    // A selected early-reject date implies you can submit to conferences whose
+    // submission deadlines are after that date.
+    const base = extractIso(selection.selectedDate ?? undefined) ?? extractIso(conference.r1_date) ?? extractIso(conference.r2_date) ?? extractIso(conference.revision_date);
+    return base;
   }
 
   if (selection.selectedType === 'R2') {
-    const base = extractIso(conference.r2_date) ?? extractIso(conference.revision_date) ?? extractIso(conference.r1_date);
-    if (!base) return null;
-    try {
-      return addDays(base, 28);
-    } catch (e) {
-      return null;
-    }
+    // Use the selected R2 date (or the conference's R2/R1/Revision fallback) directly.
+    // Do NOT add extra days — R2 should be treated as the notification date itself.
+    const base = extractIso(selection.selectedDate ?? undefined) ?? extractIso(conference.r2_date) ?? extractIso(conference.revision_date) ?? extractIso(conference.r1_date);
+    return base ?? null;
   }
 
-  const base = extractIso(conference.revision_date) ?? extractIso(conference.r2_date) ?? extractIso(conference.r1_date);
-  if (!base) return null;
-  try {
-    return addDays(base, 42);
-  } catch (e) {
-    return null;
-  }
+  const base = extractIso(selection.selectedDate ?? undefined) ?? extractIso(conference.revision_date) ?? extractIso(conference.r2_date) ?? extractIso(conference.r1_date);
+  // Use the selected revision/related date itself as the threshold — do NOT add extra days.
+  return base ?? null;
 }
 
 export function isRankIncluded(rank: Conference['rank'], rankFilter: RankFilter): boolean {
@@ -114,6 +106,35 @@ export function isConferenceAvailable(
   }
   if (!effectiveThreshold) {
     return true;
+  }
+
+  // Debug logging to help trace availability issues in the browser console.
+  try {
+    if (typeof window !== 'undefined' && (process.env.NODE_ENV !== 'production')) {
+      // eslint-disable-next-line no-console
+      console.debug('[isConferenceAvailable]', {
+        selectedConference: selectedConference.id,
+        selectionType: selection.selectedType,
+        selectionDate: selection.selectedDate,
+        effectiveThreshold,
+        target: target.id,
+        targetPaperDeadline: target.paper_deadline,
+        // normalize target and threshold for comparison
+        targetIso: extractIso(target.paper_deadline) ?? target.paper_deadline,
+        thresholdIso: extractIso(effectiveThreshold) ?? effectiveThreshold,
+        available: (() => {
+          const t = extractIso(target.paper_deadline) ?? target.paper_deadline;
+          const th = extractIso(effectiveThreshold) ?? effectiveThreshold;
+          try {
+            return compareIsoDate(t, th) >= 0;
+          } catch (e) {
+            return false;
+          }
+        })()
+      });
+    }
+  } catch (e) {
+    // ignore logging errors
   }
 
   return compareIsoDate(target.paper_deadline, effectiveThreshold) >= 0;
