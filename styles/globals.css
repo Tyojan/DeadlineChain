@@ -219,6 +219,31 @@ a:hover {
   font-variant-numeric: tabular-nums;
 }
 
+/* セル全体をクリック可能にするためのスタイル */
+.clickable-cell {
+  cursor: pointer;
+  padding: 6px 8px; /* セル内余白を確保 */
+}
+.clickable-cell:focus {
+  outline: 3px solid rgba(25,82,201,0.12);
+  outline-offset: -3px;
+}
+.clickable-cell .date-btn {
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: 6px 0;
+}
+
+/* マウスオーバー時にも「押せる」ことを示す枠線を表示 */
+.clickable-cell:hover {
+  box-shadow: inset 0 0 0 2px rgba(25,82,201,0.12);
+}
+
+.clickable-cell:hover .date-btn {
+  background: rgba(25,82,201,0.04);
+}
+
 /* カウントダウンの表示 */
 .countdown {
   display: block;

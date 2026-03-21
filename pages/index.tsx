@@ -341,67 +341,97 @@ export default function HomePage() {
                         <span className="empty-cell" aria-hidden="true">&nbsp;</span>
                       )}
                     </td>
-                    <td>
-                      <button
-                        type="button"
-                        className={`date-btn${isSelectedDate(conference.paper_deadline) ? ' selected' : ''}`}
-                        onClick={() => selectEvent(conference, 'submit', conference.paper_deadline)}
-                      >
+                    <td
+                      className="clickable-cell"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => selectEvent(conference, 'submit', conference.paper_deadline)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          selectEvent(conference, 'submit', conference.paper_deadline);
+                        }
+                      }}
+                    >
+                      <div className={`date-btn${isSelectedDate(conference.paper_deadline) ? ' selected' : ''}`}>
                         {formatFull(conference.paper_deadline)}
-                      </button>
+                      </div>
                       <div>
                         <Countdown target={conference.paper_deadline} mode="seconds" />
                       </div>
                     </td>
-                    <td>
-                      {conference.r1_date ? (
-                        <>
-                          <button
-                            type="button"
-                            className={`date-btn${isSelectedDate(conference.r1_date) ? ' selected' : ''}`}
-                            onClick={() => selectEvent(conference, 'R1', conference.r1_date)}
-                          >
-                            {formatShort(conference.r1_date)}
-                          </button>
-                          <div>
-                            <Countdown target={conference.r1_date} mode="days" />
-                          </div>
-                        </>
-                      ) : (
+                    {conference.r1_date ? (
+                      <td
+                        className="clickable-cell"
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => selectEvent(conference, 'R1', conference.r1_date)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            selectEvent(conference, 'R1', conference.r1_date);
+                          }
+                        }}
+                      >
+                        <div className={`date-btn${isSelectedDate(conference.r1_date) ? ' selected' : ''}`}>
+                          {formatShort(conference.r1_date)}
+                        </div>
+                        <div>
+                          <Countdown target={conference.r1_date} mode="days" />
+                        </div>
+                      </td>
+                    ) : (
+                      <td>
                         <span className="empty-cell" aria-hidden="true">&nbsp;</span>
-                      )}
-                    </td>
-                    <td>
-                      {conference.r2_date ? (
-                        <>
-                          <button
-                            type="button"
-                            className={`date-btn${isSelectedDate(conference.r2_date) ? ' selected' : ''}`}
-                            onClick={() => selectEvent(conference, 'R2', conference.r2_date)}
-                          >
-                            {formatShort(conference.r2_date)}
-                          </button>
-                          <div>
-                            <Countdown target={conference.r2_date} mode="days" />
-                          </div>
-                        </>
-                      ) : (
+                      </td>
+                    )}
+                    {conference.r2_date ? (
+                      <td
+                        className="clickable-cell"
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => selectEvent(conference, 'R2', conference.r2_date)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            selectEvent(conference, 'R2', conference.r2_date);
+                          }
+                        }}
+                      >
+                        <div className={`date-btn${isSelectedDate(conference.r2_date) ? ' selected' : ''}`}>
+                          {formatShort(conference.r2_date)}
+                        </div>
+                        <div>
+                          <Countdown target={conference.r2_date} mode="days" />
+                        </div>
+                      </td>
+                    ) : (
+                      <td>
                         <span className="empty-cell" aria-hidden="true">&nbsp;</span>
-                      )}
-                    </td>
-                    <td>
-                      {conference.revision_date ? (
-                        <button
-                          type="button"
-                          className={`date-btn${isSelectedDate(conference.revision_date) ? ' selected' : ''}`}
-                          onClick={() => selectEvent(conference, 'Revision', conference.revision_date)}
-                        >
+                      </td>
+                    )}
+                    {conference.revision_date ? (
+                      <td
+                        className="clickable-cell"
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => selectEvent(conference, 'Revision', conference.revision_date)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            selectEvent(conference, 'Revision', conference.revision_date);
+                          }
+                        }}
+                      >
+                        <div className={`date-btn${isSelectedDate(conference.revision_date) ? ' selected' : ''}`}>
                           {formatShort(conference.revision_date)}
-                        </button>
-                      ) : (
+                        </div>
+                      </td>
+                    ) : (
+                      <td>
                         <span className="empty-cell" aria-hidden="true">&nbsp;</span>
-                      )}
-                    </td>
+                      </td>
+                    )}
                   </tr>
                 );
               })}
