@@ -116,7 +116,12 @@
       "location": "Los Angeles",
       "url": "https://www.acsac.org/",
       "deadlines": {
-        "paper": "2026-05-30"
+        "paper": "2026-05-26",
+        "early_reject": "2026-07-13",
+        "rebuttal_start": "2026-08-18",
+        "notification": "2026-09-08",
+        "revision_date": "2026-10-08",        
+        "camera_ready": "2026-10-22"        
       },
       "event": {
         "start": "2026-12-07",
