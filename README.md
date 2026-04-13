@@ -12,12 +12,16 @@
 
 ## 運用
 ### 0. クローン
+```bash
 git clone https://github.com/Tyojan/DeadlineChain.git
 cd DeadlineChain
+```
 
 ### 1. 公開用ファイルを生成する
+```bash
 npm ci
 npm run build
+```
 
 - `npm ci`  
   依存ライブラリをインストール
@@ -27,8 +31,10 @@ npm run build
 生成物は `out/` に出力
 
 ### 2. 生成物を公開ディレクトリへ配置する
+```bash
 sudo mkdir -p /var/www/deadlinechain
 sudo cp -r out/* /var/www/deadlinechain
+```
 
 - `/var/www/deadlinechain`  
   本番公開用ファイルの配置先
@@ -38,6 +44,7 @@ sudo cp -r out/* /var/www/deadlinechain
 ### 3. Nginx を設定する
 `/etc/nginx/sites-available/deadlinechain` を作成し、以下を記載
 
+```nginx
 server {
     listen ポート番号;
     listen [::]:ポート番号;
@@ -50,6 +57,7 @@ server {
         try_files $uri $uri/ /index.html;
     }
 }
+```
 
 - `listen ポート番号`  
   ポート番号で公開する
@@ -57,8 +65,10 @@ server {
   配信するファイルの配置先を指定する
 
 ### 4. Nginx 設定を有効化する
+```bash
 sudo ln -s /etc/nginx/sites-available/deadlinechain /etc/nginx/sites-enabled/deadlinechain
 sudo systemctl restart nginx
+```
 
 - `ln -s ...`  
   作成した設定を有効化する
@@ -66,7 +76,9 @@ sudo systemctl restart nginx
   設定を反映する
 
 ### 5. 動作確認
+```text
 http://<サーバーIP>:ポート番号
+```
 
 ## データ設計
 
