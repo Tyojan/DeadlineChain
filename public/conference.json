@@ -295,6 +295,51 @@
         "start": "2027-02-22",
         "end": "2027-02-24"
       }
-    }              
+    },
+    {
+      "id": "blackhat_europe_2026",
+      "name": "Black Hat Europe 2026",
+      "rank": "A",
+      "url": "https://blackhat.com/call-for-papers.html",
+      "location": "ExCel London, United Kingdom",
+      "estimated": false,
+      "deadlines": {
+        "paper": "2026-07-22",
+        "notification": "2026-09-25"
+      },
+      "event": {
+        "start": "2026-12-09",
+        "end": "2026-12-10"
+      }
+    },
+    {
+      "id": "code_blue_2026",
+      "name": "CODE BLUE 2026",
+      "rank": "C",
+      "url": "https://codeblue.jp/cfp/presentations/",
+      "location": "Bellesalle Takadanobaba, Tokyo, Japan",
+      "estimated": false,
+      "deadlines": {
+        "paper": "2026-07-31"
+      },
+      "event": {
+        "start": "2026-11-17",
+        "end": "2026-11-18"
+      }
+    },
+    {
+      "id": "css_2026",
+      "name": "Computer Security Symposium 2026",
+      "rank": "C",
+      "url": "https://www.iwsec.org/css/2026/index.html",
+      "location": "Act City Hamamatsu and online, Hamamatsu, Shizuoka, Japan",
+      "estimated": false,
+      "deadlines": {
+      },
+      "event": {
+        "start": "2026-10-19",
+        "end": "2026-10-23"
+      }
+    }
   ]
 }
