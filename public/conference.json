@@ -138,7 +138,12 @@
       "location": "Denver",
       "deadlines": {
         "abstract": "2026-08-18",
-        "paper": "2026-08-25"
+        "paper": "2026-08-25",
+        "early_reject": "2026-10-06",
+        "rebuttal": "2026-11-05_to_2026-11-12",
+        "notification": "2026-12-03",
+        "camera_ready": "2027-01-14"
+
       }
     },
     {
@@ -150,7 +155,11 @@
       "location": "Denver",
       "deadlines": {
         "abstract": "2027-01-19",
-        "paper": "2027-01-26"
+        "paper": "2027-01-29",
+        "early_reject": "2027-03-09",
+        "rebuttal": "2027-04-08_to_2027-04-15",
+        "notification": "2027-05-06",
+        "camera_ready": "2027-06-03"
       }
     },
     {
