@@ -7,7 +7,7 @@
 - フロントエンドのみ（Next.js / React）
 - 完全静的サイト（GitHub Pagesで動作）
 - バックエンドなし
-- データはCSV管理
+- データはJSON管理
 - 日付計算はすべてクライアント側（JavaScript）
 
 ## 運用
@@ -107,25 +107,88 @@ http://<サーバーIP>:ポート番号
 
 ## データ設計
 
-### `conferences.csv`
-列定義:
-- `id`
-- `name`
-- `rank`（A* / A / B / C）
-- `area`（security / systems など）
-- `location`
-- `url`
-- `paper_deadline`
-- `r1_date`（early reject）
-- `r2_date`（notification：判定日）
-- `revision_date`（最終判定 or revision締切）
-- `camera_ready`（任意・表示のみ）
-- `event_start`
-- `event_end`
+### `public/conference.json`
+
+会議データは JSON の `conferences` 配列で管理する。
+
+```json
+{
+  "conferences": [
+    {
+      "id": "example2027",
+      "name": "Example Conference 2027",
+      "rank": "A",
+      "location": "Tokyo, Japan",
+      "url": "https://example.org",
+      "deadlines": {
+        "abstract": "2026-05-01",
+        "paper": "2026-05-08",
+        "early_reject": "2026-06-01",
+        "notification": "2026-07-01",
+        "revision_date": "2026-07-15",
+        "camera_ready": "2026-08-01"
+      },
+      "event": {
+        "start": "2026-10-01",
+        "end": "2026-10-03"
+      },
+      "classification": {
+        "topics": ["security", "cryptography"],
+        "venue_type": "conference",
+        "orientation": "academic"
+      }
+    }
+  ]
+}
+```
+
+主な項目:
+
+- `id`: 一意な識別子
+- `name`: 会議名
+- `rank`: `A*` / `A` / `B` / `C`
+- `location`: 開催地
+- `url`: 公式サイトまたは CFP の URL
+- `deadlines.abstract`: アブストラクト締切
+- `deadlines.paper`: 投稿締切
+- `deadlines.early_reject`: Early Reject 通知日
+- `deadlines.notification`: 最終通知日
+- `deadlines.revision_date`: Revision 締切または最終判定日
+- `deadlines.camera_ready`: Camera-ready 締切
+- `event.start` / `event.end`: 開催開始日・終了日
 
 制約:
 - 日付はすべてISO形式（`YYYY-MM-DD`）
 - `camera_ready`はロジックに使用しない
+
+### 会議分類（`classification`）
+
+各会議には、分野・開催形式・性格を表す `classification` を付与する。
+
+#### `topics`
+
+研究分野。複数指定できる。
+
+- `security`: 情報セキュリティ全般
+- `cryptography`: 暗号理論・暗号技術
+- `systems`: OS、分散システム、実装・運用
+- `ai`: AI・機械学習
+
+#### `venue_type`
+
+発表媒体。原則として1つ指定する。
+
+- `conference`: 査読付きの国際会議・シンポジウム
+- `workshop`: 査読付きまたは選考のあるワークショップ
+- `journal`: 論文誌・ジャーナル
+- `domestic`: 国内の学術シンポジウム・研究会
+
+#### `orientation`
+
+会議の主な性格。原則として1つ指定する。
+
+- `academic`: 学術研究を中心とする会議
+- `industry`: 産業・実務を中心とする会議
 
 ## イベント定義
 
