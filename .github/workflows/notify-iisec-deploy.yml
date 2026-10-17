@@ -24,6 +24,12 @@ jobs:
   request-deployment:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Validate conference JSON
+        run: node --input-type=module --eval "JSON.parse(await (await import('node:fs/promises')).readFile('public/conference.json', 'utf8'));"
+
       - name: Request deployment in iisec-suzaki.github.io
         env:
           TOKEN: ${{ secrets.IISEC_SUZAKI_DISPATCH_TOKEN }}
