@@ -153,6 +153,19 @@ tr.selected-conf.tiled-row .date-btn {
   margin-top: 16px;
 }
 
+.past-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.past-filter input {
+  margin: 0;
+  cursor: pointer;
+}
+
 select,
 button {
   border: 1px solid #c6cfdd;

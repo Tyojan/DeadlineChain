@@ -51,6 +51,23 @@ export function compareIsoDate(left: string, right: string): number {
   return toDate(left).getTime() - toDate(right).getTime();
 }
 
+// 最終通知日を表示期限とする。未登録なら、登録済みのレビュー日・投稿締切のうち最後の日を使う。
+export function hasPassedNotification(conference: Conference, today: string): boolean {
+  const finalNotification = extractIso(conference.r2_date);
+  const fallbackDates = [
+    conference.r1_date,
+    conference.revision_date,
+    conference.paper_deadline
+  ].map(extractIso).filter((date): date is string => date !== null);
+  const cutoff = finalNotification ?? fallbackDates.sort().pop();
+  return cutoff ? cutoff < today : false;
+}
+
+export function hasPassedSubmissionDeadline(conference: Conference, today: string): boolean {
+  const deadline = extractIso(conference.paper_deadline);
+  return deadline ? deadline < today : false;
+}
+
 export function computeNextAvailableDate(conference: Conference, selection: SelectionState): string | null {
   if (!selection.selectedType) {
     return null;

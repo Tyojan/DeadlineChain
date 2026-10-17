@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   compareIsoDate,
   computeNextAvailableDate,
+  hasPassedNotification,
+  hasPassedSubmissionDeadline,
   isConferenceAvailable,
   isRankIncluded,
   pickEarliestConference
@@ -15,6 +17,20 @@ const INITIAL_SELECTION: SelectionState = {
   selectedDate: null,
   selectedType: null
 };
+
+function localToday(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function isVisibleConference(conference: Conference, today: string | null, hidePassedDeadlines: boolean): boolean {
+  if (!today) return true;
+  if (hasPassedNotification(conference, today)) return false;
+  return !hidePassedDeadlines || !hasPassedSubmissionDeadline(conference, today);
+}
 
 function formatShort(isoDate?: string | null): string {
   if (!isoDate) return '-';
@@ -77,7 +93,15 @@ export default function HomePage() {
   const [selection, setSelection] = useState<SelectionState>(INITIAL_SELECTION);
   const [selectionChain, setSelectionChain] = useState<SelectionState[]>([]);
   const [rankFilter, setRankFilter] = useState<RankFilter>('no_filter');
+  const [hidePassedDeadlines, setHidePassedDeadlines] = useState(false);
+  const [today, setToday] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    setToday(localToday());
+    const interval = setInterval(() => setToday(localToday()), 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     async function loadCsv() {
@@ -120,9 +144,22 @@ export default function HomePage() {
 
   const availableConferences = useMemo(() => {
     return conferences
+      .filter((conference) => isVisibleConference(conference, today, hidePassedDeadlines))
       .filter((conference) => isRankIncluded(conference.rank, rankFilter))
       .filter((conference) => isConferenceAvailable(conference, activeSelectedConference, activeSelection));
-  }, [conferences, rankFilter, activeSelectedConference, activeSelection]);
+  }, [conferences, hidePassedDeadlines, today, rankFilter, activeSelectedConference, activeSelection]);
+
+  useEffect(() => {
+    if (!today) return;
+    const isHiddenId = (id: string | null) => {
+      const conference = conferences.find((item) => item.id === id);
+      return conference ? !isVisibleConference(conference, today, hidePassedDeadlines) : false;
+    };
+    if (isHiddenId(selection.selectedConference)) setSelection(INITIAL_SELECTION);
+    if (selectionChain.some((item) => isHiddenId(item.selectedConference))) {
+      setSelectionChain((previous) => previous.filter((item) => !isHiddenId(item.selectedConference)));
+    }
+  }, [conferences, hidePassedDeadlines, today, selection.selectedConference, selectionChain]);
 
   const displayedConferences = useMemo(() => {
     // Keep conferences selected in order (the selection chain) at the front.
@@ -132,7 +169,7 @@ export default function HomePage() {
     for (const s of selectionChain) {
       if (!s.selectedConference) continue;
       const conf = conferences.find((c) => c.id === s.selectedConference);
-      if (conf && !seen.has(conf.id)) {
+      if (conf && !seen.has(conf.id) && isVisibleConference(conf, today, hidePassedDeadlines)) {
         seen.add(conf.id);
         chainConfs.push(conf);
       }
@@ -142,7 +179,7 @@ export default function HomePage() {
 
     const rest = availableConferences.filter((c) => !chainIds.has(c.id));
     return [...chainConfs, ...rest];
-  }, [availableConferences, selectionChain, conferences]);
+  }, [availableConferences, selectionChain, conferences, hidePassedDeadlines, today]);
 
   const earliestConference = useMemo(() => pickEarliestConference(availableConferences), [availableConferences]);
 
@@ -339,6 +376,20 @@ export default function HomePage() {
             <option value="b_or_higher">B or higher</option>
             <option value="c_or_higher">C or higher</option>
           </select>
+
+          <label
+            className="past-filter"
+            htmlFor="hide-passed-deadlines"
+            title="Show only conferences whose submission deadline has not passed"
+          >
+            <input
+              id="hide-passed-deadlines"
+              type="checkbox"
+              checked={hidePassedDeadlines}
+              onChange={(event) => setHidePassedDeadlines(event.target.checked)}
+            />
+            Hide passed deadlines
+          </label>
 
           <button type="button" onClick={resetSelection}>
             Clear selection
