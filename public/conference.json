@@ -361,6 +361,16 @@
       "event": {
         "date": "2026-10-31"
       }
+    },
+    {
+      "id": "ieice_ci_2028",
+      "name": "IEICE Trans. Fundamentals - Cryptography and Information Security (Mar 2028)",
+      "area": "security",
+      "url": "https://www.ieice.org/eng/s_issue/cfp/2028_3EA.pdf",
+      "estimated": false,
+      "deadlines": {
+        "paper": "2027-03-15"
+      }
     }
   ]
 }
