@@ -4,6 +4,18 @@ on:
   push:
     branches:
       - main
+    # 静的サイトの生成結果に影響する変更だけを公開サイトへ通知する。
+    # README、GitHub Actions 設定、開発用設定だけの変更は通知しない。
+    paths:
+      - 'pages/**'
+      - 'src/**'
+      - 'styles/**'
+      - 'public/**'
+      - 'next.config.mjs'
+      - 'next-env.d.ts'
+      - 'tsconfig.json'
+      - 'package.json'
+      - 'package-lock.json'
 
 permissions:
   contents: read

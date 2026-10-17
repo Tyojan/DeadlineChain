@@ -16,6 +16,31 @@
 git clone https://github.com/Tyojan/DeadlineChain.git
 cd DeadlineChain
 ```
+### Windows でローカル確認する
+
+Windows では、まず [Node.js の LTS 版](https://nodejs.org/en/download) をインストールする。npm は Node.js に同梱されているため、別途インストールする必要はない。
+
+インストール後に PowerShell を再起動し、以下で確認する。
+
+```powershell
+node --version
+npm --version
+```
+
+次のコマンドで、本番に配置するものと同じ静的成果物を生成し、ローカルで配信する。
+
+```powershell
+npm.cmd ci
+npm.cmd run build
+npx.cmd --yes serve out -l 3000
+```
+
+ブラウザで `http://localhost:3000/index.html` を開く。配信を終了するには、PowerShell で `Ctrl + C` を押す。
+
+> PowerShell の実行ポリシーによって `npm` が実行できない環境でも、上記の `npm.cmd` / `npx.cmd` は使える。
+
+データを更新する場合は `public/conference.json` を編集し、`out/` は直接編集しない。更新後はローカルサーバーを停止してから、再度 `npm.cmd run build` と `npx.cmd --yes serve out -l 3000` を実行して確認する。
+
 
 ### 1. 公開用ファイルを生成する
 ```bash
