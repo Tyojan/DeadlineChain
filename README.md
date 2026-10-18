@@ -3,6 +3,8 @@
 国際会議の締切とレビュー進行をもとに、
 リジェクト後に次に投稿可能な会議を可視化する静的Webアプリ。
 
+[https://iisec-suzaki.github.io/deadlinechain/index.html](https://iisec-suzaki.github.io/deadlinechain/index.html)にて公開中。
+
 ## 概要
 - フロントエンドのみ（Next.js / React）
 - 完全静的サイト（GitHub Pagesで動作）
