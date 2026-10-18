@@ -826,7 +826,15 @@ export default function HomePage({ lastUpdated }: HomePageProps) {
             {lastUpdated === 'Unknown' ? lastUpdated : <time dateTime={lastUpdated}>{lastUpdated}</time>}.
           </p>
           <p>
-            To add or update conference information, please edit <code>public/conference.json</code> and submit a pull request on{' '}
+            To add or update conference information, please edit{' '}
+            <a
+              href="https://github.com/Tyojan/DeadlineChain/blob/main/public/conference.json"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              conference.json
+            </a>{' '}
+            and submit a pull request on{' '}
             <a href="https://github.com/Tyojan/DeadlineChain" target="_blank" rel="noopener noreferrer">
               GitHub
             </a>
