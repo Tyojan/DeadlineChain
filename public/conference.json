@@ -763,6 +763,32 @@
         ],
         "orientation": "academic"
       }
+    },
+    {
+      "id": "eurosp2027",
+      "name": "IEEE EuroS&P 2027",
+      "url": "https://eurosp2027.ieee-security.org/cfp.html",
+      "location": "Madrid",
+      "deadlines": {
+        "abstract": "2026-11-25",
+        "paper": "2026-12-02",
+        "early_reject": "2027-01-28",
+        "rebuttal": "2027-02-24_to_2027-03-01",
+        "notification": "2027-03-18"
+      },
+      "event": {
+        "start": "2027-07-05",
+        "end": "2027-07-09"
+      },
+      "classification": {
+        "topics": [
+          "security"
+        ],
+        "venue_type": [
+          "conference"
+        ],
+        "orientation": "academic"
+      }
     }
   ]
 }
