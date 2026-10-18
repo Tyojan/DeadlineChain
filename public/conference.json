@@ -905,5 +905,60 @@
         "orientation": "academic"
       }
     }
+,
+    {
+      "id": "asplos2027_april",
+      "name": "ASPLOS 2027",
+      "rank": "A*",
+      "url": "https://www.asplos-conference.org/asplos2027/cfp/",
+      "cycle": "april",
+      "location": "Heraklion, Crete, Greece",
+      "estimated": false,
+      "deadlines": {
+        "paper": "2026-04-15",
+        "rebuttal": "2026-07-06_to_2026-07-09",
+        "notification": "2026-07-27"
+      },
+      "event": {
+        "start": "2027-04-11",
+        "end": "2027-04-15"
+      },
+      "classification": {
+        "topics": [
+          "systems"
+        ],
+        "venue_type": [
+          "conference"
+        ],
+        "orientation": "academic"
+      }
+    },
+    {
+      "id": "asplos2027_september",
+      "name": "ASPLOS 2027",
+      "rank": "A*",
+      "url": "https://www.asplos-conference.org/asplos2027/cfp/",
+      "cycle": "september",
+      "location": "Heraklion, Crete, Greece",
+      "estimated": false,
+      "deadlines": {
+        "paper": "2026-09-09",
+        "rebuttal": "2026-12-01_to_2026-12-04",
+        "notification": "2026-12-21"
+      },
+      "event": {
+        "start": "2027-04-11",
+        "end": "2027-04-15"
+      },
+      "classification": {
+        "topics": [
+          "systems"
+        ],
+        "venue_type": [
+          "conference"
+        ],
+        "orientation": "academic"
+      }
+    }
   ]
 }
