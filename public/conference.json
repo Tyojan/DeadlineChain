@@ -819,6 +819,64 @@
         ],
         "orientation": "academic"
       }
+    },
+    {
+      "id": "dimva2027_cycle1",
+      "name": "DIMVA 2027",
+      "rank": "B",
+      "url": "https://www.dimva.org/dimva2027/",
+      "cycle": "cycle1",
+      "location": "Enschede, The Netherlands",
+      "estimated": false,
+      "deadlines": {
+        "abstract": "2026-12-03",
+        "paper": "2026-12-10",
+        "notification": "2027-01-28",
+        "camera_ready": "2027-05-27"
+      },
+      "event": {
+        "start": "2027-06-30",
+        "end": "2027-07-02"
+      },
+      "classification": {
+        "topics": [
+          "security",
+          "systems"
+        ],
+        "venue_type": [
+          "conference"
+        ],
+        "orientation": "academic"
+      }
+    },
+    {
+      "id": "dimva2027_cycle2",
+      "name": "DIMVA 2027",
+      "rank": "B",
+      "url": "https://www.dimva.org/dimva2027/",
+      "cycle": "cycle2",
+      "location": "Enschede, The Netherlands",
+      "estimated": false,
+      "deadlines": {
+        "abstract": "2027-02-11",
+        "paper": "2027-02-18",
+        "notification": "2027-04-08",
+        "camera_ready": "2027-05-27"
+      },
+      "event": {
+        "start": "2027-06-30",
+        "end": "2027-07-02"
+      },
+      "classification": {
+        "topics": [
+          "security",
+          "systems"
+        ],
+        "venue_type": [
+          "conference"
+        ],
+        "orientation": "academic"
+      }
     }
   ]
 }
