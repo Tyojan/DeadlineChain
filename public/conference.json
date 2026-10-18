@@ -703,6 +703,17 @@
         ],
         "orientation": "academic"
       }
+    },
+    {
+      "id": "asiaccs2027",
+      "name": "ACM ASIACCS 2027",
+      "url": "https://asiaccs2027.cityu.edu.mo/call-for-papers/index.html",
+      "deadlines": {},
+      "classification": {
+        "topics": [],
+        "venue_type": [],
+        "orientation": ""
+      }
     }
   ]
 }
