@@ -959,5 +959,33 @@
         "orientation": "academic"
       }
     }
+,
+    {
+      "id": "osdi2027",
+      "name": "OSDI 2027",
+      "rank": "A*",
+      "url": "https://www.usenix.org/conference/osdi27/call-for-papers",
+      "location": "Baltimore, MD, USA",
+      "estimated": false,
+      "deadlines": {
+        "abstract": "2026-12-01",
+        "paper": "2026-12-08",
+        "notification": "2027-03-16",
+        "camera_ready": "2027-06-03"
+      },
+      "event": {
+        "start": "2027-07-07",
+        "end": "2027-07-09"
+      },
+      "classification": {
+        "topics": [
+          "systems"
+        ],
+        "venue_type": [
+          "conference"
+        ],
+        "orientation": "academic"
+      }
+    }
   ]
 }
