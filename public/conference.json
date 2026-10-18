@@ -604,7 +604,7 @@
     {
       "id": "ches2027_2",
       "name": "CHES 2027 (TCHES Volume 2027/2)",
-      "rank": "A",      
+      "rank": "A",
       "url": "https://ches.iacr.org/2027/callforpapers.php",
       "location": "Cancún, Mexico",
       "estimated": false,
@@ -632,7 +632,7 @@
     {
       "id": "ches2027_3",
       "name": "CHES 2027 (TCHES Volume 2027/3)",
-      "rank": "A",      
+      "rank": "A",
       "url": "https://ches.iacr.org/2027/callforpapers.php",
       "location": "Cancún, Mexico",
       "estimated": false,
@@ -660,7 +660,7 @@
     {
       "id": "ches2027_4",
       "name": "CHES 2027 (TCHES Volume 2027/4)",
-      "rank": "A",      
+      "rank": "A",
       "url": "https://ches.iacr.org/2027/callforpapers.php",
       "location": "Cancún, Mexico",
       "estimated": false,
@@ -818,6 +818,64 @@
           "conference"
         ],
         "orientation": "academic"
+      }
+    },
+    {
+      "name": "DIMVA 2027",
+      "rank": "B",
+      "url": "https://www.dimva.org/dimva2027/",
+      "location": "Enschede, The Netherlands",
+      "estimated": false,
+      "event": {
+        "start": "2027-06-30",
+        "end": "2027-07-02"
+      },
+      "classification": {
+        "topics": [
+          "security",
+          "systems"
+        ],
+        "venue_type": [
+          "conference"
+        ],
+        "orientation": "academic"
+      },
+      "id": "dimva2027_cycle1",
+      "cycle": "cycle1",
+      "deadlines": {
+        "abstract": "2026-12-03",
+        "paper": "2026-12-10",
+        "notification": "2027-01-28",
+        "camera_ready": "2027-05-27"
+      }
+    },
+    {
+      "name": "DIMVA 2027",
+      "rank": "B",
+      "url": "https://www.dimva.org/dimva2027/",
+      "location": "Enschede, The Netherlands",
+      "estimated": false,
+      "event": {
+        "start": "2027-06-30",
+        "end": "2027-07-02"
+      },
+      "classification": {
+        "topics": [
+          "security",
+          "systems"
+        ],
+        "venue_type": [
+          "conference"
+        ],
+        "orientation": "academic"
+      },
+      "id": "dimva2027_cycle2",
+      "cycle": "cycle2",
+      "deadlines": {
+        "abstract": "2027-02-11",
+        "paper": "2027-02-18",
+        "notification": "2027-04-08",
+        "camera_ready": "2027-05-27"
       }
     }
   ]
