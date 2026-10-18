@@ -703,6 +703,56 @@
         ],
         "orientation": "academic"
       }
+    },
+    {
+      "id": "asiaccs2027_cycle1",
+      "name": "ACM ASIACCS 2027",
+      "url": "https://asiaccs2027.cityu.edu.mo/call-for-papers/index.html",
+      "cycle": "cycle1",
+      "location": "Macau",
+      "deadlines": {
+        "paper": "2026-08-21",
+        "early_reject": "2026-09-25",
+        "rebuttal": "2026-10-26_to_2026-10-30",
+        "notification": "2026-11-13",
+        "revision_date": "2026-12-04",
+        "shepherded_approval": "2026-12-04",
+        "camera_ready": "2026-12-11"
+      },
+      "event": {
+        "start": "2027-07-12",
+        "end": "2027-07-16"
+      },
+      "classification": {
+        "topics": [],
+        "venue_type": [],
+        "orientation": ""
+      }
+    },
+    {
+      "id": "asiaccs2027_cycle2",
+      "name": "ACM ASIACCS 2027",
+      "url": "https://asiaccs2027.cityu.edu.mo/call-for-papers/index.html",
+      "cycle": "cycle2",
+      "location": "Macau",
+      "deadlines": {
+        "paper": "2026-12-11",
+        "early_reject": "2027-02-05",
+        "revision_date": "2027-02-12",
+        "rebuttal": "2027-03-08_to_2027-03-12",
+        "notification": "2027-03-31",
+        "shepherded_approval": "2027-04-21",
+        "camera_ready": "2027-05-07"
+      },
+      "event": {
+        "start": "2027-07-12",
+        "end": "2027-07-16"
+      },
+      "classification": {
+        "topics": [],
+        "venue_type": [],
+        "orientation": ""
+      }
     }
   ]
 }
