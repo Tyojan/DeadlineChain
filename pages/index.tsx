@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import type { GetStaticProps } from 'next';
 // CSV fallback removed — use JSON only
 import {
   compareIsoDate,
@@ -32,6 +33,26 @@ const INITIAL_CLASSIFICATION_SELECTIONS: Record<ClassificationKey, string[]> = {
   topics: [],
   venue_type: [],
   orientation: []
+};
+
+type HomePageProps = {
+  lastUpdated: string;
+};
+
+export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
+  try {
+    const { execFileSync } = await import('node:child_process');
+    const lastUpdated = execFileSync('git', ['log', '-1', '--format=%cs'], { encoding: 'utf8' }).trim();
+    return { props: { lastUpdated: lastUpdated || 'Unknown' } };
+  } catch {
+    try {
+      const { stat } = await import('node:fs/promises');
+      const { mtime } = await stat('public/conference.json');
+      return { props: { lastUpdated: mtime.toISOString().slice(0, 10) } };
+    } catch {
+      return { props: { lastUpdated: 'Unknown' } };
+    }
+  }
 };
 
 function localToday(): string {
@@ -141,7 +162,7 @@ function selectionTypeLabel(type: SelectionType | null): string {
   }
 }
 
-export default function HomePage() {
+export default function HomePage({ lastUpdated }: HomePageProps) {
   const [conferences, setConferences] = useState<Conference[]>([]);
   const [selection, setSelection] = useState<SelectionState>(INITIAL_SELECTION);
   const [selectionChain, setSelectionChain] = useState<SelectionState[]>([]);
@@ -791,6 +812,27 @@ export default function HomePage() {
             Clear selection
           </button>
         </div>
+
+        <footer className="site-footer">
+          <p>
+            Maintained by{' '}
+            <a href="https://iisec-suzaki.github.io/" target="_blank" rel="noopener noreferrer">
+              Suzaki Lab
+            </a>
+            .
+          </p>
+          <p>
+            Last updated:{' '}
+            {lastUpdated === 'Unknown' ? lastUpdated : <time dateTime={lastUpdated}>{lastUpdated}</time>}.
+          </p>
+          <p>
+            To add or update conference information, please edit <code>public/conference.json</code> and submit a pull request on{' '}
+            <a href="https://github.com/Tyojan/DeadlineChain" target="_blank" rel="noopener noreferrer">
+              GitHub
+            </a>
+            .
+          </p>
+        </footer>
       </section>
     </main>
   );

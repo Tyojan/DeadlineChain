@@ -252,6 +252,27 @@ button {
   font-weight: 400;
 }
 
+.site-footer {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid #dbe3ef;
+  color: #64748b;
+  font-size: 14px;
+  text-align: center;
+}
+
+.site-footer p {
+  margin: 4px 0;
+}
+
+.site-footer a {
+  color: #0b58d6;
+}
+
+.site-footer code {
+  font-size: 0.95em;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
