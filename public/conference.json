@@ -789,6 +789,36 @@
         ],
         "orientation": "academic"
       }
+    },
+    {
+      "id": "dsn2027",
+      "name": "IEEE/IFIP International Conference on Dependable Systems and Networks 2027",
+      "rank": "A",
+      "url": "https://dsn2027-berlin.github.io/call-for-contributions/",
+      "location": "Berlin, Germany",
+      "estimated": false,
+      "deadlines": {
+        "abstract": "2026-11-25",
+        "paper": "2026-12-02",
+        "early_reject": "2027-01-26",
+        "rebuttal": "2027-02-12_to_2027-02-26",
+        "notification": "2027-03-18",
+        "camera_ready": "2027-04-24"
+      },
+      "event": {
+        "start": "2027-06-22",
+        "end": "2027-06-25"
+      },
+      "classification": {
+        "topics": [
+          "security",
+          "systems"
+        ],
+        "venue_type": [
+          "conference"
+        ],
+        "orientation": "academic"
+      }
     }
   ]
 }
