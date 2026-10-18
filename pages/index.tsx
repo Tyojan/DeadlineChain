@@ -164,8 +164,8 @@ export default function HomePage() {
     async function loadData() {
       try {
         const [conferenceResponse, preferencesResponse] = await Promise.all([
-          fetch('/conference.json'),
-          fetch('/preferences.json')
+          fetch('conference.json'),
+          fetch('preferences.json')
         ]);
         if (!conferenceResponse.ok) throw new Error('Failed to load conference.json.');
         if (!preferencesResponse.ok) throw new Error('Failed to load preferences.json.');
