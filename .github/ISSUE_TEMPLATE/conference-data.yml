@@ -1,0 +1,19 @@
+name: Add or update conference data
+description: Paste official CFP or deadline page URL(s).
+title: "[Conference data] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Paste official CFP or deadline page URLs below.
+        One URL per line is fine. No other information is required.
+
+  - type: textarea
+    id: source_urls
+    attributes:
+      label: Official CFP / deadline page URL(s)
+      placeholder: |
+        https://example.org/cfp
+        https://example.org/deadlines
+    validations:
+      required: true

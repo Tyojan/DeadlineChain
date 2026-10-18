@@ -1,29 +1,33 @@
-# Copilot Instructions for DeadlineChain
+# DeadlineChain Copilot Instructions
 
-## 前提条件
+## Project overview
 
-- **回答は必ず日本語でしてください。**
-- コードコメントも日本語で記述してください。
-- エラーメッセージや技術的な説明も日本語で行ってください。
-- 大規模な変更（100行以上）を行う前には、まず変更計画を日本語で提案してください。
+- DeadlineChain is a static Next.js application that visualizes conference deadlines.
+- Conference data is stored in `public/conference.json`.
+- Display filter settings are stored in `public/preferences.json`.
+- The production site is deployed to GitHub Pages.
 
-## プロジェクトについて
-このリポジトリでは、国際会議の締切とレビュー進行にもとづいて、
-「リジェクト後に次に投稿可能な会議」を可視化する静的Webアプリを構築する。
+## Communication
 
-## プロジェクト前提
-- 技術: Next.js / React（フロントエンドのみ）
-- 配布: GitHub Pages（完全静的サイト）
-- バックエンド: なし
-- データ源: `conferences.csv`
-- 日付計算: すべてクライアント側 JavaScript で実行
+- Write pull request descriptions, comments, and user-facing explanations in Japanese.
+- Before making a change of more than 100 lines outside a data-only request, propose a plan in Japanese.
 
-## データ仕様
-- CSVの列は以下を前提に実装すること:
-  - `id`, `name`, `rank`, `area`, `location`, `url`
-  - `paper_deadline`, `r1_date`, `r2_date`, `revision_date`
-  - `camera_ready`（任意・表示のみ）
-  - `event_start`, `event_end`
-- 日付は ISO 形式 `YYYY-MM-DD` とする。
-- `camera_ready` はロジック計算に使用しない。
+## Conference-data tasks
 
+When an issue contains official CFP or deadline-page URLs:
+
+- Treat every URL in the issue as a source to investigate.
+- Use official CFP or conference pages as the source for deadlines, location, and event dates.
+- Add one `public/conference.json` entry for every submission cycle found.
+- Do not infer or invent dates, locations, classifications, or ranks.
+- Set `rank` only when it can be verified from a reliable ranking source. Otherwise, omit `rank`.
+- Preserve the existing JSON structure. Put `classification` after `event`; if there is no `event`, put it last.
+- Use arrays for `classification.topics` and `classification.venue_type`.
+- For a journal/conference hybrid, use both venue types, for example `"venue_type": ["conference", "journal"]`.
+- Do not modify unrelated application files for a data-only request.
+
+## Validation and pull requests
+
+- Validate JSON and run `npm run build` before opening a pull request.
+- In the pull request description, list every source URL consulted, each entry and submission cycle added or changed, and any omitted or uncertain field, especially `rank`.
+- Never merge a pull request yourself; request maintainer review.
