@@ -147,10 +147,48 @@ tr.selected-conf.tiled-row .date-btn {
 
 .controls {
   display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.primary-controls,
+.preference-controls {
+  display: flex;
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
-  margin-top: 16px;
+}
+
+.classification-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 6px 10px 8px;
+  border: 1px solid #c6cfdd;
+  border-radius: 8px;
+}
+
+.classification-filter legend {
+  padding: 0 4px;
+  color: #4f5d79;
+  font-size: 13px;
+}
+
+.classification-filter label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.classification-filter input {
+  margin: 0;
+  cursor: pointer;
 }
 
 .past-filter {
@@ -199,6 +237,19 @@ button {
   width: 100%;
   overflow-x: auto;
   margin-top: 14px;
+}
+
+.selection-reset {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.selection-reset button {
+  min-height: 36px;
+  padding: 6px 10px;
+  font-size: 16px;
+  font-weight: 400;
 }
 
 table {

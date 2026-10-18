@@ -27,8 +27,8 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v4
 
-      - name: Validate conference JSON
-        run: node --input-type=module --eval "JSON.parse(await (await import('node:fs/promises')).readFile('public/conference.json', 'utf8'));"
+      - name: Validate JSON data
+        run: node --input-type=module --eval "const { readFile } = await import('node:fs/promises'); await Promise.all(['public/conference.json', 'public/preferences.json'].map(async (path) => JSON.parse(await readFile(path, 'utf8'))));"
 
       - name: Request deployment in iisec-suzaki.github.io
         env:

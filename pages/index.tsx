@@ -10,12 +10,28 @@ import {
   pickEarliestConference
 } from '@/lib/deadline';
 import { convertJsonToConferences } from '@/lib/json';
-import { Conference, RankFilter, SelectionState, SelectionType } from '@/types/conference';
+import {
+  ClassificationFilter,
+  ClassificationKey,
+  Conference,
+  Preferences,
+  RankFilter,
+  SelectionState,
+  SelectionType
+} from '@/types/conference';
 
 const INITIAL_SELECTION: SelectionState = {
   selectedConference: null,
   selectedDate: null,
   selectedType: null
+};
+
+const CLASSIFICATION_KEYS: ClassificationKey[] = ['topics', 'venue_type', 'orientation'];
+
+const INITIAL_CLASSIFICATION_SELECTIONS: Record<ClassificationKey, string[]> = {
+  topics: [],
+  venue_type: [],
+  orientation: []
 };
 
 function localToday(): string {
@@ -30,6 +46,43 @@ function isVisibleConference(conference: Conference, today: string | null, hideP
   if (!today) return true;
   if (hasPassedNotification(conference, today)) return false;
   return !hidePassedDeadlines || !hasPassedSubmissionDeadline(conference, today);
+}
+
+function isClassificationKey(value: unknown): value is ClassificationKey {
+  return typeof value === 'string' && CLASSIFICATION_KEYS.includes(value as ClassificationKey);
+}
+
+function parsePreferences(raw: unknown): Preferences {
+  if (!raw || typeof raw !== 'object' || !Array.isArray((raw as Preferences).classification_filters)) {
+    return { classification_filters: [] };
+  }
+
+  const classification_filters: ClassificationFilter[] = [];
+  for (const filter of (raw as Preferences).classification_filters) {
+    if (!filter || !isClassificationKey(filter.key) || typeof filter.label !== 'string' || !Array.isArray(filter.options)) {
+      continue;
+    }
+    const options = filter.options.filter((option) =>
+      option && typeof option.value === 'string' && typeof option.label === 'string'
+    );
+    classification_filters.push({ key: filter.key, label: filter.label, options });
+  }
+  return { classification_filters };
+}
+
+function conferenceHasClassificationValue(conference: Conference, key: ClassificationKey, value: string): boolean {
+  if (key === 'topics' || key === 'venue_type') return conference.classification[key].includes(value);
+  return conference.classification[key] === value;
+}
+
+function matchesClassificationSelections(
+  conference: Conference,
+  selections: Record<ClassificationKey, string[]>
+): boolean {
+  return CLASSIFICATION_KEYS.every((key) => {
+    const selectedValues = selections[key];
+    return selectedValues.length === 0 || selectedValues.some((value) => conferenceHasClassificationValue(conference, key, value));
+  });
 }
 
 function formatShort(isoDate?: string | null): string {
@@ -93,6 +146,10 @@ export default function HomePage() {
   const [selection, setSelection] = useState<SelectionState>(INITIAL_SELECTION);
   const [selectionChain, setSelectionChain] = useState<SelectionState[]>([]);
   const [rankFilter, setRankFilter] = useState<RankFilter>('no_filter');
+  const [preferences, setPreferences] = useState<Preferences>({ classification_filters: [] });
+  const [classificationSelections, setClassificationSelections] = useState<Record<ClassificationKey, string[]>>(
+    INITIAL_CLASSIFICATION_SELECTIONS
+  );
   const [hidePassedDeadlines, setHidePassedDeadlines] = useState(false);
   const [today, setToday] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -104,21 +161,38 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    async function loadCsv() {
+    async function loadData() {
       try {
-        // Load JSON only (no CSV fallback)
-        const resp = await fetch('/conference.json');
-        if (!resp.ok) throw new Error('Failed to load conference.json.');
-        const json = await resp.json();
-        const parsed = convertJsonToConferences(json);
+        const [conferenceResponse, preferencesResponse] = await Promise.all([
+          fetch('/conference.json'),
+          fetch('/preferences.json')
+        ]);
+        if (!conferenceResponse.ok) throw new Error('Failed to load conference.json.');
+        if (!preferencesResponse.ok) throw new Error('Failed to load preferences.json.');
+        const [conferenceJson, preferencesJson] = await Promise.all([
+          conferenceResponse.json(),
+          preferencesResponse.json()
+        ]);
+        const parsed = convertJsonToConferences(conferenceJson);
+        const parsedPreferences = parsePreferences(preferencesJson);
+        const defaultClassificationSelections: Record<ClassificationKey, string[]> = {
+          ...INITIAL_CLASSIFICATION_SELECTIONS
+        };
+        for (const filter of parsedPreferences.classification_filters) {
+          defaultClassificationSelections[filter.key] = filter.options
+            .filter((option) => parsed.some((conference) => conferenceHasClassificationValue(conference, filter.key, option.value)))
+            .map((option) => option.value);
+        }
         setConferences(parsed);
+        setPreferences(parsedPreferences);
+        setClassificationSelections(defaultClassificationSelections);
         setErrorMessage(null);
       } catch (error) {
         setErrorMessage(error instanceof Error ? error.message : 'An error occurred while loading data.');
       }
     }
 
-    loadCsv();
+    loadData();
   }, []);
 
   const selectedConference = useMemo(() => {
@@ -142,24 +216,38 @@ export default function HomePage() {
     return conferences.find((c) => c.id === activeSelection.selectedConference) ?? null;
   }, [conferences, activeSelection]);
 
+  const classificationFilters = useMemo(() => {
+    return preferences.classification_filters
+      .map((filter) => ({
+        ...filter,
+        options: filter.options.filter((option) =>
+          conferences.some((conference) => conferenceHasClassificationValue(conference, filter.key, option.value))
+        )
+      }))
+      .filter((filter) => filter.options.length > 0);
+  }, [preferences, conferences]);
+
   const availableConferences = useMemo(() => {
     return conferences
       .filter((conference) => isVisibleConference(conference, today, hidePassedDeadlines))
       .filter((conference) => isRankIncluded(conference.rank, rankFilter))
+      .filter((conference) => matchesClassificationSelections(conference, classificationSelections))
       .filter((conference) => isConferenceAvailable(conference, activeSelectedConference, activeSelection));
-  }, [conferences, hidePassedDeadlines, today, rankFilter, activeSelectedConference, activeSelection]);
+  }, [conferences, hidePassedDeadlines, today, rankFilter, classificationSelections, activeSelectedConference, activeSelection]);
 
   useEffect(() => {
     if (!today) return;
     const isHiddenId = (id: string | null) => {
       const conference = conferences.find((item) => item.id === id);
-      return conference ? !isVisibleConference(conference, today, hidePassedDeadlines) : false;
+      return conference
+        ? !isVisibleConference(conference, today, hidePassedDeadlines) || !matchesClassificationSelections(conference, classificationSelections)
+        : false;
     };
     if (isHiddenId(selection.selectedConference)) setSelection(INITIAL_SELECTION);
     if (selectionChain.some((item) => isHiddenId(item.selectedConference))) {
       setSelectionChain((previous) => previous.filter((item) => !isHiddenId(item.selectedConference)));
     }
-  }, [conferences, hidePassedDeadlines, today, selection.selectedConference, selectionChain]);
+  }, [conferences, hidePassedDeadlines, today, classificationSelections, selection.selectedConference, selectionChain]);
 
   const displayedConferences = useMemo(() => {
     // Keep conferences selected in order (the selection chain) at the front.
@@ -169,7 +257,7 @@ export default function HomePage() {
     for (const s of selectionChain) {
       if (!s.selectedConference) continue;
       const conf = conferences.find((c) => c.id === s.selectedConference);
-      if (conf && !seen.has(conf.id) && isVisibleConference(conf, today, hidePassedDeadlines)) {
+      if (conf && !seen.has(conf.id) && isVisibleConference(conf, today, hidePassedDeadlines) && matchesClassificationSelections(conf, classificationSelections)) {
         seen.add(conf.id);
         chainConfs.push(conf);
       }
@@ -179,7 +267,7 @@ export default function HomePage() {
 
     const rest = availableConferences.filter((c) => !chainIds.has(c.id));
     return [...chainConfs, ...rest];
-  }, [availableConferences, selectionChain, conferences, hidePassedDeadlines, today]);
+  }, [availableConferences, selectionChain, conferences, hidePassedDeadlines, today, classificationSelections]);
 
   const earliestConference = useMemo(() => pickEarliestConference(availableConferences), [availableConferences]);
 
@@ -275,12 +363,34 @@ export default function HomePage() {
     setSelectionChain([]);
   }
 
+  function resetPreferences() {
+    setRankFilter('no_filter');
+    setHidePassedDeadlines(false);
+    setClassificationSelections(() => {
+      const nextSelections: Record<ClassificationKey, string[]> = { ...INITIAL_CLASSIFICATION_SELECTIONS };
+      for (const filter of classificationFilters) {
+        nextSelections[filter.key] = filter.options.map((option) => option.value);
+      }
+      return nextSelections;
+    });
+  }
+
+  function toggleClassificationSelection(key: ClassificationKey, value: string) {
+    setClassificationSelections((previous) => {
+      const selected = previous[key];
+      const nextValues = selected.includes(value)
+        ? selected.filter((selectedValue) => selectedValue !== value)
+        : [...selected, value];
+      return { ...previous, [key]: nextValues };
+    });
+  }
+
   /**
    * Countdown display component
    * - `target` is expected to be an ISO date string (YYYY-MM-DD or YYYY-MM-DDThh:mm:ss etc.)
    * - If the date is only YYYY-MM-DD, treat it as the end of that day (23:59:59 local time)
    */
-  function Countdown({ target, mode = 'days' }: { target?: string | null; mode?: 'days' | 'seconds' }) {
+  function Countdown({ target, mode = 'days', pastLabel = 'Past deadline' }: { target?: string | null; mode?: 'days' | 'seconds'; pastLabel?: string }) {
     const [now, setNow] = useState<Date>(() => new Date());
 
     // Convert target string to Date (interpreted in local time)
@@ -309,7 +419,7 @@ export default function HomePage() {
     if (!tgt) return <span className="countdown">-</span>;
 
     const diffMs = tgt.getTime() - now.getTime();
-    if (diffMs <= 0) return <span className="countdown">Past deadline</span>;
+    if (diffMs <= 0) return <span className="countdown">{pastLabel}</span>;
 
     if (mode === 'days') {
       const diffDays = Math.ceil(diffMs / (24 * 3600 * 1000));
@@ -364,36 +474,60 @@ export default function HomePage() {
         </p>
 
         <div className="controls">
-          <label htmlFor="rank-filter">Rank:</label>
-          <select
-            id="rank-filter"
-            value={rankFilter}
-            onChange={(event) => setRankFilter(event.target.value as RankFilter)}
-          >
-            <option value="no_filter">All ranks</option>
-            <option value="a_star_only">A* only</option>
-            <option value="a_or_higher">A or higher</option>
-            <option value="b_or_higher">B or higher</option>
-            <option value="c_or_higher">C or higher</option>
-          </select>
+          <div className="primary-controls">
+            <label htmlFor="rank-filter">Rank:</label>
+            <select
+              id="rank-filter"
+              value={rankFilter}
+              onChange={(event) => setRankFilter(event.target.value as RankFilter)}
+            >
+              <option value="no_filter">All ranks</option>
+              <option value="a_star_only">A* only</option>
+              <option value="a_or_higher">A or higher</option>
+              <option value="b_or_higher">B or higher</option>
+              <option value="c_or_higher">C or higher</option>
+            </select>
 
-          <label
-            className="past-filter"
-            htmlFor="hide-passed-deadlines"
-            title="Show only conferences whose submission deadline has not passed"
-          >
-            <input
-              id="hide-passed-deadlines"
-              type="checkbox"
-              checked={hidePassedDeadlines}
-              onChange={(event) => setHidePassedDeadlines(event.target.checked)}
-            />
-            Hide passed deadlines
-          </label>
+            <label
+              className="past-filter"
+              htmlFor="hide-passed-deadlines"
+              title="Show only conferences whose submission deadline has not passed"
+            >
+              <input
+                id="hide-passed-deadlines"
+                type="checkbox"
+                checked={hidePassedDeadlines}
+                onChange={(event) => setHidePassedDeadlines(event.target.checked)}
+              />
+              Hide passed deadlines
+            </label>
+          </div>
 
-          <button type="button" onClick={resetSelection}>
-            Clear selection
-          </button>
+          <div className="preference-controls">
+            {classificationFilters.map((filter) => (
+              <fieldset className="classification-filter" key={filter.key}>
+                <legend>{filter.label}</legend>
+                {filter.options.map((option) => {
+                  const inputId = `classification-${filter.key}-${option.value}`;
+                  return (
+                    <label htmlFor={inputId} key={option.value}>
+                      <input
+                        id={inputId}
+                        type="checkbox"
+                        checked={classificationSelections[filter.key].includes(option.value)}
+                        onChange={() => toggleClassificationSelection(filter.key, option.value)}
+                      />
+                      {option.label}
+                    </label>
+                  );
+                })}
+              </fieldset>
+            ))}
+
+            <button type="button" onClick={resetPreferences}>
+              Reset preferences
+            </button>
+          </div>
         </div>
 
 
@@ -558,7 +692,7 @@ export default function HomePage() {
                           {formatShort(conference.r1_date)}
                         </div>
                         <div>
-                          <Countdown target={conference.r1_date} mode="days" />
+                          <Countdown target={conference.r1_date} mode="days" pastLabel="Date passed" />
                         </div>
                       </td>
                     ) : (
@@ -583,7 +717,7 @@ export default function HomePage() {
                           {formatShort(conference.r2_date)}
                         </div>
                         <div>
-                          <Countdown target={conference.r2_date} mode="days" />
+                          <Countdown target={conference.r2_date} mode="days" pastLabel="Date passed" />
                         </div>
                       </td>
                     ) : (
@@ -650,6 +784,12 @@ export default function HomePage() {
               })}
             </tbody>
           </table>
+        </div>
+
+        <div className="selection-reset">
+          <button type="button" onClick={resetSelection}>
+            Clear selection
+          </button>
         </div>
       </section>
     </main>

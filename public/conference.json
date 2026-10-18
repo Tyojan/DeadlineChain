@@ -21,7 +21,9 @@
           "security",
           "systems"
         ],
-        "venue_type": "conference",
+        "venue_type": [
+          "conference"
+        ],
         "orientation": "academic"
       }
     },
@@ -43,7 +45,9 @@
           "security",
           "systems"
         ],
-        "venue_type": "workshop",
+        "venue_type": [
+          "workshop"
+        ],
         "orientation": "academic"
       }
     },
@@ -65,7 +69,9 @@
           "security",
           "systems"
         ],
-        "venue_type": "workshop",
+        "venue_type": [
+          "workshop"
+        ],
         "orientation": "academic"
       }
     },
@@ -88,7 +94,9 @@
           "security",
           "systems"
         ],
-        "venue_type": "workshop",
+        "venue_type": [
+          "workshop"
+        ],
         "orientation": "academic"
       }
     },
@@ -111,7 +119,9 @@
           "security",
           "cryptography"
         ],
-        "venue_type": "workshop",
+        "venue_type": [
+          "workshop"
+        ],
         "orientation": "academic"
       }
     },
@@ -137,7 +147,9 @@
         "topics": [
           "security"
         ],
-        "venue_type": "conference",
+        "venue_type": [
+          "conference"
+        ],
         "orientation": "academic"
       }
     },
@@ -160,7 +172,9 @@
         "topics": [
           "security"
         ],
-        "venue_type": "conference",
+        "venue_type": [
+          "conference"
+        ],
         "orientation": "academic"
       }
     },
@@ -186,7 +200,9 @@
         "topics": [
           "security"
         ],
-        "venue_type": "conference",
+        "venue_type": [
+          "conference"
+        ],
         "orientation": "academic"
       }
     },
@@ -209,7 +225,9 @@
         "topics": [
           "security"
         ],
-        "venue_type": "conference",
+        "venue_type": [
+          "conference"
+        ],
         "orientation": "academic"
       }
     },
@@ -232,7 +250,9 @@
         "topics": [
           "security"
         ],
-        "venue_type": "conference",
+        "venue_type": [
+          "conference"
+        ],
         "orientation": "academic"
       }
     },
@@ -255,7 +275,9 @@
         "topics": [
           "systems"
         ],
-        "venue_type": "workshop",
+        "venue_type": [
+          "workshop"
+        ],
         "orientation": "academic"
       }
     },
@@ -279,7 +301,9 @@
         "topics": [
           "systems"
         ],
-        "venue_type": "conference",
+        "venue_type": [
+          "conference"
+        ],
         "orientation": "academic"
       }
     },
@@ -303,7 +327,9 @@
         "topics": [
           "security"
         ],
-        "venue_type": "conference",
+        "venue_type": [
+          "conference"
+        ],
         "orientation": "academic"
       }
     },
@@ -327,7 +353,9 @@
         "topics": [
           "security"
         ],
-        "venue_type": "conference",
+        "venue_type": [
+          "conference"
+        ],
         "orientation": "academic"
       }
     },
@@ -350,7 +378,9 @@
         "topics": [
           "security"
         ],
-        "venue_type": "conference",
+        "venue_type": [
+          "conference"
+        ],
         "orientation": "academic"
       }
     },
@@ -370,7 +400,9 @@
         "topics": [
           "security"
         ],
-        "venue_type": "conference",
+        "venue_type": [
+          "conference"
+        ],
         "orientation": "academic"
       }
     },
@@ -390,7 +422,9 @@
         "topics": [
           "security"
         ],
-        "venue_type": "conference",
+        "venue_type": [
+          "conference"
+        ],
         "orientation": "academic"
       }
     },
@@ -414,7 +448,9 @@
         "topics": [
           "security"
         ],
-        "venue_type": "conference",
+        "venue_type": [
+          "conference"
+        ],
         "orientation": "academic"
       }
     },
@@ -438,7 +474,9 @@
         "topics": [
           "security"
         ],
-        "venue_type": "conference",
+        "venue_type": [
+          "conference"
+        ],
         "orientation": "academic"
       }
     },
@@ -460,7 +498,9 @@
         "topics": [
           "security"
         ],
-        "venue_type": "conference",
+        "venue_type": [
+          "conference"
+        ],
         "orientation": "industry"
       }
     },
@@ -481,7 +521,9 @@
         "topics": [
           "security"
         ],
-        "venue_type": "conference",
+        "venue_type": [
+          "conference"
+        ],
         "orientation": "industry"
       }
     },
@@ -500,7 +542,9 @@
         "topics": [
           "security"
         ],
-        "venue_type": "domestic",
+        "venue_type": [
+          "domestic"
+        ],
         "orientation": "academic"
       }
     },
@@ -523,7 +567,121 @@
           "security",
           "systems"
         ],
-        "venue_type": "workshop",
+        "venue_type": [
+          "workshop"
+        ],
+        "orientation": "academic"
+      }
+    },
+    {
+      "id": "ches2027_1",
+      "name": "CHES 2027 (TCHES Volume 2027/1)",
+      "rank": "A",
+      "url": "https://ches.iacr.org/2027/callforpapers.php",
+      "location": "Cancún, Mexico",
+      "estimated": false,
+      "deadlines": {
+        "paper": "2026-07-15",
+        "notification": "2026-09-15",
+        "camera_ready": "2026-10-14"
+      },
+      "event": {
+        "start": "2027-09-06",
+        "end": "2027-09-09"
+      },
+      "classification": {
+        "topics": [
+          "security",
+          "cryptography"
+        ],
+        "venue_type": [
+          "conference",
+          "journal"
+        ],
+        "orientation": "academic"
+      }
+    },
+    {
+      "id": "ches2027_2",
+      "name": "CHES 2027 (TCHES Volume 2027/2)",
+      "rank": "A",      
+      "url": "https://ches.iacr.org/2027/callforpapers.php",
+      "location": "Cancún, Mexico",
+      "estimated": false,
+      "deadlines": {
+        "paper": "2026-10-15",
+        "notification": "2026-12-15",
+        "camera_ready": "2027-01-14"
+      },
+      "event": {
+        "start": "2027-09-06",
+        "end": "2027-09-09"
+      },
+      "classification": {
+        "topics": [
+          "security",
+          "cryptography"
+        ],
+        "venue_type": [
+          "conference",
+          "journal"
+        ],
+        "orientation": "academic"
+      }
+    },
+    {
+      "id": "ches2027_3",
+      "name": "CHES 2027 (TCHES Volume 2027/3)",
+      "rank": "A",      
+      "url": "https://ches.iacr.org/2027/callforpapers.php",
+      "location": "Cancún, Mexico",
+      "estimated": false,
+      "deadlines": {
+        "paper": "2027-01-15",
+        "notification": "2027-03-15",
+        "camera_ready": "2027-04-14"
+      },
+      "event": {
+        "start": "2027-09-06",
+        "end": "2027-09-09"
+      },
+      "classification": {
+        "topics": [
+          "security",
+          "cryptography"
+        ],
+        "venue_type": [
+          "conference",
+          "journal"
+        ],
+        "orientation": "academic"
+      }
+    },
+    {
+      "id": "ches2027_4",
+      "name": "CHES 2027 (TCHES Volume 2027/4)",
+      "rank": "A",      
+      "url": "https://ches.iacr.org/2027/callforpapers.php",
+      "location": "Cancún, Mexico",
+      "estimated": false,
+      "deadlines": {
+        "paper": "2027-04-15",
+        "notification": "2027-06-15",
+        "camera_ready": "2027-07-14"
+      },
+      "event": {
+        "start": "2027-09-06",
+        "end": "2027-09-09"
+      },
+      "classification": {
+        "topics": [
+          "security",
+          "cryptography"
+        ],
+        "venue_type": [
+          "conference",
+          "journal"
+        ],
         "orientation": "academic"
       }
     },
@@ -540,7 +698,9 @@
           "security",
           "cryptography"
         ],
-        "venue_type": "journal",
+        "venue_type": [
+          "journal"
+        ],
         "orientation": "academic"
       }
     }

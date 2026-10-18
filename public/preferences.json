@@ -1,0 +1,31 @@
+{
+  "classification_filters": [
+    {
+      "key": "topics",
+      "label": "Topics",
+      "options": [
+        { "value": "security", "label": "Security" },
+        { "value": "cryptography", "label": "Cryptography" },
+        { "value": "systems", "label": "Systems" }
+      ]
+    },
+    {
+      "key": "venue_type",
+      "label": "Venue type",
+      "options": [
+        { "value": "conference", "label": "Conference" },
+        { "value": "workshop", "label": "Workshop" },
+        { "value": "journal", "label": "Journal" },
+        { "value": "domestic", "label": "Domestic" }
+      ]
+    },
+    {
+      "key": "orientation",
+      "label": "Orientation",
+      "options": [
+        { "value": "academic", "label": "Academic" },
+        { "value": "industry", "label": "Industry" }
+      ]
+    }
+  ]
+}

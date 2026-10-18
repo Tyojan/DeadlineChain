@@ -134,7 +134,7 @@ http://<サーバーIP>:ポート番号
       },
       "classification": {
         "topics": ["security", "cryptography"],
-        "venue_type": "conference",
+        "venue_type": ["conference"],
         "orientation": "academic"
       }
     }
@@ -176,7 +176,7 @@ http://<サーバーIP>:ポート番号
 
 #### `venue_type`
 
-発表媒体。原則として1つ指定する。
+発表媒体。複数指定できる（例：ジャーナル付き国際会議は `conference` と `journal`）。
 
 - `conference`: 査読付きの国際会議・シンポジウム
 - `workshop`: 査読付きまたは選考のあるワークショップ
@@ -189,6 +189,27 @@ http://<サーバーIP>:ポート番号
 
 - `academic`: 学術研究を中心とする会議
 - `industry`: 産業・実務を中心とする会議
+
+### `public/preferences.json`
+
+分類フィルターの選択肢と表示順を管理する。`options` の配列順が画面上の表示順になる。
+
+```json
+{
+  "classification_filters": [
+    {
+      "key": "topics",
+      "label": "Topics",
+      "options": [
+        { "value": "security", "label": "Security" },
+        { "value": "cryptography", "label": "Cryptography" }
+      ]
+    }
+  ]
+}
+```
+
+画面には、`conference.json` に実際に使われている値だけを選択肢として表示する。同じ分類内では複数選択を OR 条件で扱い、異なる分類どうしは AND 条件で絞り込む。
 
 ## イベント定義
 

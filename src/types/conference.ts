@@ -1,6 +1,28 @@
 export type Rank = 'A*' | 'A' | 'B' | 'C';
 export type SelectionType = 'submit' | 'R1' | 'R2' | 'Revision';
 export type RankFilter = 'no_filter' | 'c_or_higher' | 'b_or_higher' | 'a_or_higher' | 'a_star_only';
+export type ClassificationKey = 'topics' | 'venue_type' | 'orientation';
+
+export type Classification = {
+  topics: string[];
+  venue_type: string[];
+  orientation: string;
+};
+
+export type ClassificationFilterOption = {
+  value: string;
+  label: string;
+};
+
+export type ClassificationFilter = {
+  key: ClassificationKey;
+  label: string;
+  options: ClassificationFilterOption[];
+};
+
+export type Preferences = {
+  classification_filters: ClassificationFilter[];
+};
 
 export type Conference = {
   id: string;
@@ -18,6 +40,7 @@ export type Conference = {
   event_start: string;
   event_end: string;
   estimated?: boolean;
+  classification: Classification;
 };
 
 export type SelectionState = {

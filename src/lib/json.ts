@@ -47,7 +47,18 @@ export function convertJsonToConferences(raw: any): Conference[] {
         camera_ready: item.deadlines?.camera_ready ?? '',
         estimated: typeof item.estimated !== 'undefined' ? parseEstimated(item.estimated) : false,
         event_start: event_start,
-        event_end: event_end
+        event_end: event_end,
+        classification: {
+          topics: Array.isArray(item.classification?.topics)
+            ? item.classification.topics.filter((topic: unknown): topic is string => typeof topic === 'string')
+            : [],
+          venue_type: Array.isArray(item.classification?.venue_type)
+            ? item.classification.venue_type.filter((venueType: unknown): venueType is string => typeof venueType === 'string')
+            : typeof item.classification?.venue_type === 'string'
+              ? [item.classification.venue_type]
+              : [],
+          orientation: typeof item.classification?.orientation === 'string' ? item.classification.orientation : ''
+        }
       };
 
       out.push(conf);
