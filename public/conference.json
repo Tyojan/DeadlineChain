@@ -877,6 +877,33 @@
         ],
         "orientation": "academic"
       }
+    },
+    {
+      "id": "codaspy2027",
+      "name": "ACM CODASPY 2027",
+      "url": "https://www.codaspy.org/2027/cfp.html",
+      "location": "Fort Collins, Colorado, USA",
+      "estimated": false,
+      "deadlines": {
+        "abstract": "2026-11-16",
+        "paper": "2026-11-23",
+        "rebuttal": "2027-01-18_to_2027-01-22",
+        "notification": "2027-01-25",
+        "camera_ready": "2027-03-26"
+      },
+      "event": {
+        "start": "2027-06-14",
+        "end": "2027-06-17"
+      },
+      "classification": {
+        "topics": [
+          "security"
+        ],
+        "venue_type": [
+          "conference"
+        ],
+        "orientation": "academic"
+      }
     }
   ]
 }
