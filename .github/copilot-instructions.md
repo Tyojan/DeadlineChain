@@ -20,6 +20,8 @@ When an issue contains official CFP or deadline-page URLs:
 - Use official CFP or conference pages as the source for deadlines, location, and event dates.
 - Add one `public/conference.json` entry for every submission cycle found.
 - Do not infer or invent dates, locations, classifications, or ranks.
+- If an official source cannot be accessed or essential data cannot be verified, do not edit `public/conference.json`. Report the blocked URL and the missing data instead.
+- Never create a placeholder entry with an empty `deadlines` object, empty classification arrays, or an empty classification value.
 - Set `rank` only when it can be verified from a reliable ranking source. Otherwise, omit `rank`.
 - Preserve the existing JSON structure. Put `classification` after `event`; if there is no `event`, put it last.
 - Use arrays for `classification.topics` and `classification.venue_type`.
