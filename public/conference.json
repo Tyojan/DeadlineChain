@@ -986,5 +986,66 @@
         "orientation": "academic"
       }
     }
+,
+    {
+      "id": "eurosys2027_spring",
+      "name": "EuroSys 2027",
+      "rank": "A",
+      "url": "https://2027.eurosys.org/cfp.html",
+      "cycle": "spring",
+      "location": "Rabat, Morocco",
+      "estimated": false,
+      "deadlines": {
+        "abstract": "2026-05-07",
+        "paper": "2026-05-14",
+        "rebuttal": "2026-07-31",
+        "notification": "2026-08-21",
+        "camera_ready": "2026-09-25"
+      },
+      "event": {
+        "start": "2027-04-19",
+        "end": "2027-04-23"
+      },
+      "classification": {
+        "topics": [
+          "systems",
+          "security"
+        ],
+        "venue_type": [
+          "conference"
+        ],
+        "orientation": "academic"
+      }
+    },
+    {
+      "id": "eurosys2027_fall",
+      "name": "EuroSys 2027",
+      "rank": "A",
+      "url": "https://2027.eurosys.org/cfp.html",
+      "cycle": "fall",
+      "location": "Rabat, Morocco",
+      "estimated": false,
+      "deadlines": {
+        "abstract": "2026-09-17",
+        "paper": "2026-09-24",
+        "rebuttal": "2027-01-08",
+        "notification": "2027-01-29",
+        "camera_ready": "2027-03-05"
+      },
+      "event": {
+        "start": "2027-04-19",
+        "end": "2027-04-23"
+      },
+      "classification": {
+        "topics": [
+          "systems",
+          "security"
+        ],
+        "venue_type": [
+          "conference"
+        ],
+        "orientation": "academic"
+      }
+    }
   ]
 }
