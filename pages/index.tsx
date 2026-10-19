@@ -171,7 +171,7 @@ export default function HomePage({ lastUpdated }: HomePageProps) {
   const [classificationSelections, setClassificationSelections] = useState<Record<ClassificationKey, string[]>>(
     INITIAL_CLASSIFICATION_SELECTIONS
   );
-  const [hidePassedDeadlines, setHidePassedDeadlines] = useState(false);
+  const [hidePassedDeadlines, setHidePassedDeadlines] = useState(true);
   const [today, setToday] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
