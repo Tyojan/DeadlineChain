@@ -1213,6 +1213,31 @@
         ],
         "orientation": "academic"
       }
+    },
+    {
+      "id": "scis2027",
+      "name": "SCIS 2027",
+      "url": "https://www.iwsec.org/scis/2027/cfp.html",
+      "location": "Hiroshima, Japan",
+      "estimated": false,
+      "deadlines": {
+        "abstract": "2026-11-30",
+        "paper": "2026-12-15"
+      },
+      "event": {
+        "start": "2027-01-26",
+        "end": "2027-01-29"
+      },
+      "classification": {
+        "topics": [
+          "security",
+          "cryptography"
+        ],
+        "venue_type": [
+          "domestic"
+        ],
+        "orientation": "academic"
+      }
     }
   ]
 }
