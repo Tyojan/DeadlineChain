@@ -1238,6 +1238,33 @@
         ],
         "orientation": "academic"
       }
+    },
+    {
+      "id": "sais2027",
+      "name": "USENIX SAIS 2027",
+      "url": "https://www.usenix.org/conference/sais27/call-for-papers",
+      "location": "Santa Clara, CA, USA",
+      "estimated": false,
+      "deadlines": {
+        "paper": "2027-02-04",
+        "notification": "2027-03-16",
+        "revision_date": "2027-03-30",
+        "camera_ready": "2027-04-20"
+      },
+      "event": {
+        "start": "2027-06-07",
+        "end": "2027-06-08"
+      },
+      "classification": {
+        "topics": [
+          "ai",
+          "security"
+        ],
+        "venue_type": [
+          "conference"
+        ],
+        "orientation": "academic"
+      }
     }
   ]
 }
